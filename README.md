@@ -18,12 +18,23 @@ Repositorio de trabajos, talleres y actividades del curso de Inteligencia Artifi
     └── requirements.txt
 ```
 
-### App de Streamlit: Dashboard de análisis SEO
+### App de Streamlit: Dashboard de SEO & Marketing Digital
 
-Dashboard que recibe el link de cualquier página web (propia o de terceros) y estima
-un puntaje básico de SEO (0-100), mostrando el detalle por criterio: HTTPS, código de
-respuesta, tiempo de carga, título, meta description, etiquetas H1, imágenes con `alt`,
-cantidad de contenido, mobile-friendly, y enlaces internos/externos.
+Dashboard para llevar seguimiento de la salud SEO y de marketing de varias páginas o
+negocios propios (o de terceros). Recibe el link de una página y una palabra clave
+objetivo opcional, y entrega:
+
+- **Score general (0-100)** y desglose por categoría (Técnico, Contenido, Social).
+- **Técnico y rastreo:** HTTPS, status code, tiempo de respuesta, `robots.txt` y
+  `sitemap.xml` accesibles, meta robots, canonical, contenido mixto, URL limpia.
+- **Contenido y keywords:** título y meta description (con largo ideal), jerarquía de
+  encabezados, extensión del contenido, `alt` en imágenes, mobile-friendly, idioma,
+  favicon, enlaces internos, **contador de palabras clave más frecuentes** y análisis
+  de densidad/ubicación de una keyword objetivo.
+- **Social y confianza:** Open Graph, Twitter Card, datos estructurados (JSON-LD) y
+  señales de confianza (contacto, acerca de, privacidad, términos).
+- **Plan de acción priorizado** con recomendaciones concretas ordenadas por impacto.
+- **Historial de sesión** para comparar varias páginas/negocios y exportarlo a CSV.
 
 ```bash
 cd streamlit
