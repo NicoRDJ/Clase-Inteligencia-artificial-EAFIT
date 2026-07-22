@@ -13,12 +13,17 @@ Repositorio de trabajos, talleres y actividades del curso de Inteligencia Artifi
 ```
 .
 ├── trabajos/       # Un archivo Markdown autocontenido por trabajo (TrabajoN-tema-corto.md)
-└── streamlit/       # App de Streamlit para demos y talleres
+└── streamlit/       # Dashboard de análisis SEO en Streamlit
     ├── app.py
     └── requirements.txt
 ```
 
-### Correr la app de Streamlit
+### App de Streamlit: Dashboard de análisis SEO
+
+Dashboard que recibe el link de cualquier página web (propia o de terceros) y estima
+un puntaje básico de SEO (0-100), mostrando el detalle por criterio: HTTPS, código de
+respuesta, tiempo de carga, título, meta description, etiquetas H1, imágenes con `alt`,
+cantidad de contenido, mobile-friendly, y enlaces internos/externos.
 
 ```bash
 cd streamlit
