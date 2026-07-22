@@ -11,7 +11,7 @@ Explorar aplicaciones reales de Inteligencia Artificial en Hugging Face Spaces y
 
 ## 1. Nombre del Space
 
-- **Nombre:** Omni Image Editor
+- **Nombre:** Omni Image Editor 2.0
 - **Enlace:** https://huggingface.co/spaces/selfit-camera/Omni-Image-Editor
 
 ## 2. ¿Qué hace el agente?
