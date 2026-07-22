@@ -12,7 +12,7 @@ Repositorio de trabajos, talleres y actividades del curso de Inteligencia Artifi
 
 ```
 .
-├── trabajos/       # Un archivo Markdown autocontenido por trabajo (TrabajoN-tema-corto.md)
+├── trabajos/       # Una carpeta o archivo Markdown autocontenido por trabajo (TrabajoN-tema-corto.md)
 └── streamlit/       # Dashboard de análisis SEO en Streamlit
     ├── app.py
     └── requirements.txt
