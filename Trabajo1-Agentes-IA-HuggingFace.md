@@ -62,10 +62,16 @@ El comportamiento observable es la relación entre las entradas que recibe el ag
 ## Reto adicional
 
 **a) Totalmente observable, determinista y episódico:**
-Un Space de clasificación de imágenes simple (por ejemplo, un clasificador de razas de perros basado en ResNet, sin muestreo aleatorio en la salida). Es totalmente observable porque toda la información relevante para la decisión está en la imagen de entrada; es determinista porque la misma imagen siempre produce la misma etiqueta de salida; y es episódico porque cada clasificación es independiente de las anteriores.
+
+**Space:** ResNet (PyTorch) — https://huggingface.co/spaces/pytorch/ResNet
+
+Es un clasificador de imágenes: el usuario sube una foto y el modelo ResNet devuelve las 5 categorías más probables (de ImageNet) junto con su nivel de confianza. Es **totalmente observable** porque toda la información necesaria para decidir la etiqueta está contenida en la imagen de entrada, sin depender de contexto oculto ni de interacciones previas. Es **determinista** porque, al tratarse de un forward-pass sobre pesos ya entrenados y fijos (sin muestreo aleatorio en la salida), la misma imagen produce siempre las mismas 5 categorías con las mismas probabilidades. Es **episódico** porque cada imagen se clasifica de forma aislada: el resultado de una clasificación no afecta ni depende de las clasificaciones anteriores.
 
 **b) Parcialmente observable, estocástico y secuencial:**
-Un Space de chat con un modelo de lenguaje (LLM) configurado con temperatura mayor a cero. Es parcialmente observable porque el modelo no conoce el verdadero estado mental o la intención completa del usuario, solo el texto de la conversación; es estocástico porque el muestreo de tokens introduce variabilidad entre respuestas incluso ante el mismo input; y es secuencial porque cada turno de la conversación depende del historial de turnos anteriores, a diferencia de un entorno episódico.
+
+**Space:** Gradio Chatbot Template — https://huggingface.co/spaces/gradio-templates/chatbot
+
+Es una interfaz de chat que usa el modelo `openai/gpt-oss-20b` a través del `InferenceClient` de Hugging Face, con controles deslizantes de **temperature** (0.1–4.0) y **top-p** (0.1–1.0) que el propio usuario puede ajustar. Es **parcialmente observable** porque el modelo solo accede al texto de la conversación (historial + mensaje del sistema), sin conocer la intención real o el estado mental completo del usuario. Es **estocástico** porque, con `temperature` > 0, el muestreo de tokens (nucleus sampling vía `top_p`) hace que la misma entrada pueda producir respuestas distintas en ejecuciones diferentes. Es **secuencial** (no episódico) porque la función `respond()` construye cada respuesta extendiendo el historial de mensajes previos (`messages.extend(history)`), es decir, cada turno depende explícitamente de los turnos anteriores de la conversación.
 
 ---
 
