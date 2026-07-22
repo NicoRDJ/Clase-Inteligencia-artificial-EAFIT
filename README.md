@@ -6,11 +6,25 @@ Repositorio de trabajos, talleres y actividades del curso de Inteligencia Artifi
 
 | # | Trabajo | Tema | Archivo |
 |---|---|---|---|
-| 1 | Analizando Agentes de IA con Hugging Face Spaces | Componentes PEAS, clasificación del entorno y tipos de programa de agente, aplicados al Space [Omni Image Editor 2.0](https://huggingface.co/spaces/selfit-camera/Omni-Image-Editor) | [Trabajo1-Agentes-IA-HuggingFace.md](Trabajo1-Agentes-IA-HuggingFace.md) |
+| 1 | Analizando Agentes de IA con Hugging Face Spaces | Componentes PEAS, clasificación del entorno y tipos de programa de agente, aplicados al Space [Omni Image Editor 2.0](https://huggingface.co/spaces/selfit-camera/Omni-Image-Editor) | [trabajos/Trabajo1-Agentes-IA-HuggingFace.md](trabajos/Trabajo1-Agentes-IA-HuggingFace.md) |
 
 ## Estructura
 
-Cada trabajo vive en su propio archivo Markdown, nombrado `TrabajoN-tema-corto.md`, para que quede autocontenido y fácil de revisar directamente en GitHub.
+```
+.
+├── trabajos/       # Un archivo Markdown autocontenido por trabajo (TrabajoN-tema-corto.md)
+└── streamlit/       # App de Streamlit para demos y talleres
+    ├── app.py
+    └── requirements.txt
+```
+
+### Correr la app de Streamlit
+
+```bash
+cd streamlit
+pip install -r requirements.txt
+streamlit run app.py
+```
 
 ## Estado
 
