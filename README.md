@@ -1,6 +1,6 @@
 # Clase Inteligencia Artificial — EAFIT
 
-Repositorio de trabajos, talleres y actividades del curso de Inteligencia Artificial en EAFIT.
+Repositorio de trabajos, talleres y actividades del curso de Inteligencia Artificial en la Universidad EAFIT.
 
 ## Contenido
 
