@@ -27,13 +27,13 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 
 | Actividad | Tipo | Estado |
 |---|---|---|
-| `01_hill_climbing.ipynb` (2 TODO) | Notebook de clase | ⬜ |
-| `02_simulated_annealing.ipynb` (1 TODO) · `02_simulated_annealing_hospitales.ipynb` (3) | Notebooks | ⬜ |
-| `03_algoritmos_geneticos.ipynb` (2 TODO) · `..._hospitales.ipynb` (3) | Notebooks | ⬜ |
-| `04_programacion_lineal.ipynb` (1 TODO) | Notebook | ⬜ |
-| `05_csp.ipynb` (3 TODO) · `05_csp_ac3.ipynb` | Notebooks | ⬜ |
-| `06_workshop_reinas_optimizacion_local.ipynb` (8 actividades) | **Workshop** | 🟡 mismo contenido que `talleres/modulo1/02_optimizacion_resuelto.ipynb` (conflicts, vecinos, hill climbing, SA, comparación) — falta random restart y las preguntas de discusión propias de este notebook |
-| Actividad slide: selección proporcional al fitness en GA; extender GA a una frase objetivo | Actividad en clase | ⬜ |
+| `01_hill_climbing.ipynb` (2 TODO) | Notebook de clase | ✅ `notebooks/clase3-optimizacion/01_hill_climbing_resuelto.ipynb` |
+| `02_simulated_annealing.ipynb` (1) · `02_simulated_annealing_hospitales.ipynb` (3) | Notebooks | ✅ `notebooks/clase3-optimizacion/02_simulated_annealing[_hospitales]_resuelto.ipynb` |
+| `03_algoritmos_geneticos.ipynb` (2) · `..._hospitales.ipynb` (3) | Notebooks | ✅ `notebooks/clase3-optimizacion/03_algoritmos_geneticos[_hospitales]_resuelto.ipynb` |
+| `04_programacion_lineal.ipynb` (1 TODO) | Notebook | ✅ `notebooks/clase3-optimizacion/04_programacion_lineal_resuelto.ipynb` |
+| `05_csp.ipynb` (3 TODO) · `05_csp_ac3.ipynb` (sin TODO) | Notebooks | ✅ `notebooks/clase3-optimizacion/05_csp_resuelto.ipynb` |
+| `06_workshop_reinas_optimizacion_local.ipynb` (8 actividades) | **Workshop** | ✅ `notebooks/clase3-optimizacion/06_workshop_reinas_resuelto.ipynb` — las 8 actividades + comparación (100 corridas) |
+| Actividad slide: selección proporcional al fitness (ruleta) y cruce uniforme en GA | Actividad en clase | ✅ resuelta dentro de `03_algoritmos_geneticos_resuelto.ipynb` |
 
 ## Semana 4 — MDP  (`slides/clase4.md`, `notebooks/lecture4`)
 
@@ -53,7 +53,7 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 | `workshops/module1/02_optimization_code_challenge.ipynb` | Taller de código | ✅ ⭐ `talleres/modulo1/02_optimizacion_resuelto.ipynb` |
 | `workshops/module1/03_q_learning_code_challenge.ipynb` | Taller de código | ✅ ⭐ `talleres/modulo1/03_q_learning_resuelto.ipynb` |
 | `01_cheeseworld_q_learning`, `02_qlearning_frozenlake` | Notebooks demo (sin TODO) | — (el contenido está explicado en la guía de estudio del examen) |
-| `03_qlearning_taxi.ipynb` (7 TODO) | Notebook de clase | ⬜ |
+| `03_qlearning_taxi.ipynb` (7 TODO + 7 preguntas) | Notebook de clase | ✅ `notebooks/clase5-rl/03_qlearning_taxi_resuelto.ipynb` — entrena en Taxi-v4, recompensa −200 → +10, 7 preguntas respondidas |
 | `workshops/module1/Midterm Exam/` (Q-learning tabular con Pac-Man) | Práctica examen práctico | 🟡 hay una plantilla comentada en `~/Desktop/universidad/materia IA/Examen 01/4 - Plantilla codigo Q-learning (practico).py` |
 | P4 (proyecto puente): comparación de 3 formas de obtener una política | Proyecto | ⬜ |
 
@@ -75,15 +75,26 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 
 ---
 
-## Qué falta para dejar el Examen 01 (⭐) al 100 %
+## Estado global de actividades/talleres con `TODO`
 
-Todo lo marcado ⭐ ya está hecho y verificado. Opcionales que refuerzan:
+| Semana | Notebooks/actividades con TODO | Hechos |
+|---|---:|---:|
+| 1–2 | actividad de entornos + búsqueda | ✅ (actividad) · notebooks ya estaban |
+| 3 — Optimización | 8 | **8 / 8** ✅ |
+| 4 — MDP | 1 lab + 1 actividad | **2 / 2** ✅ |
+| 5 — RL | 3 talleres código + taller a mano + taxi | **5 / 5** ✅ |
+| 6 — ML | 3 (challenge) | ver abajo |
+| 7 — Redes neuronales | 2 (challenges) + 1 guiado | ver abajo |
 
-1. `notebooks/lecture5/03_qlearning_taxi.ipynb` — Q-learning tabular en el entorno Taxi de Gym (7 TODO). Mismo patrón que `talleres/modulo1/03_q_learning_resuelto.ipynb`.
-2. `workshops/module1/Midterm Exam/` — resolver la versión Pac-Man para llegar afinado al componente práctico.
-3. Semana 3 completa (optimización) y P3 configurable de la Semana 4, si el parcial termina cubriendo más de RL.
+Todas las actividades/talleres con `TODO` de las **Semanas 1–5 (Parte 1 → Examen 01)**
+están resueltas y verificadas (ejecutan de principio a fin, los `assert` pasan).
 
-## Siguiente lote sugerido (fuera del Examen 01)
+## Pendiente: Semanas 6–7 (Parte 2 · Evaluación 2, no el Examen 01)
 
-Semana 3 notebooks · Semana 6 (ML pipeline + challenge) · Semana 7 (Keras). Son más largos
-y corresponden a la segunda evaluación / proyectos, no al Examen 01.
+- `notebooks/lecture6/challenge/` (3 notebooks, dataset `wine.csv`) — requiere `scikit-learn`.
+- `notebooks/lecture6/classification/` (6 notebooks) — **no tienen `TODO`**: son un pipeline
+  de referencia ya completo, solo hay que leerlos/ejecutarlos.
+- `notebooks/lecture7/` (CIFAR-10 grayscale, Olivetti Faces) — requiere `keras`/`tensorflow`
+  y entrenamiento de redes (varios minutos por notebook en CPU).
+- `YourFirstDeepNN_FashionMNIST_Keras3.ipynb` — **sin `TODO`**, notebook guiado.
+- Proyectos P0–P11 — entregas por tema, con criterios de corrección propios (ver pacto).
