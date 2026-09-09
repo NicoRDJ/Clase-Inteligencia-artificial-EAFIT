@@ -1,0 +1,4 @@
+# Artefactos regenerados al ejecutar los notebooks en orden (1 -> 2 -> 3)
+/artifacts/
+/reports/
+/data/processed/

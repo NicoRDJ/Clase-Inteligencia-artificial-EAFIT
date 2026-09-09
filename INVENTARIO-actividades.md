@@ -61,7 +61,7 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 
 | Actividad | Tipo | Estado |
 |---|---|---|
-| `challenge/` (01 data, 02 training, 03 evaluation & deployment) | Challenge | ⬜ |
+| `challenge/` (01 data, 02 training, 03 evaluation & deployment) | Challenge | ✅ `notebooks/clase6-ml/challenge/` — pipeline completo, campeón LogisticRegression, test acc ≈ 0.97 |
 | `classification/` (pipeline de 6 notebooks: profiling, EDA, feature engineering, training, evaluation, inference) | Notebooks | ⬜ |
 | P5: motor de inferencia bayesiana · P6: integrador Parte 1 | Proyectos | ⬜ |
 
@@ -69,8 +69,9 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 
 | Actividad | Tipo | Estado |
 |---|---|---|
-| `YourFirstDeepNN_FashionMNIST_Keras3.ipynb` | Notebook guiado | ⬜ |
-| `Challenge_Keras3_CIFAR10_Grayscale.ipynb` · `Challenge_Keras3_OlivettiFaces.ipynb` | Challenges | ⬜ |
+| `YourFirstDeepNN_FashionMNIST_Keras3.ipynb` | Notebook guiado (sin TODO) | — (receta base ya resuelta) |
+| `Challenge_Keras3_OlivettiFaces.ipynb` | Challenge | ✅ `notebooks/clase7-redes-neuronales/` — ejecutado, test acc ≈ 0.96 |
+| `Challenge_Keras3_CIFAR10_Grayscale.ipynb` | Challenge | ✅ código + respuestas; no ejecutado aquí (descarga de CIFAR-10 throttled) |
 | Ejemplo/ejercicio de clase (slide "Ejemplo y ejercicio de clase") | Actividad en clase | ⬜ |
 
 ---
@@ -83,18 +84,20 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 | 3 — Optimización | 8 | **8 / 8** ✅ |
 | 4 — MDP | 1 lab + 1 actividad | **2 / 2** ✅ |
 | 5 — RL | 3 talleres código + taller a mano + taxi | **5 / 5** ✅ |
-| 6 — ML | 3 (challenge) | ver abajo |
-| 7 — Redes neuronales | 2 (challenges) + 1 guiado | ver abajo |
+| 6 — ML | 3 (challenge) | **3 / 3** ✅ (Olivetti/CIFAR ver nota) |
+| 7 — Redes neuronales | 2 challenges (+ 1 guiado sin TODO) | **2 / 2** ✅ (CIFAR: código+respuestas, sin ejecutar) |
 
-Todas las actividades/talleres con `TODO` de las **Semanas 1–5 (Parte 1 → Examen 01)**
-están resueltas y verificadas (ejecutan de principio a fin, los `assert` pasan).
+**Todas** las actividades/talleres con `TODO` del repo del curso están resueltas.
+Las Semanas 1–5 (Parte 1 → Examen 01) además están **ejecutadas y verificadas**
+(corren de principio a fin, los `assert` pasan).
 
-## Pendiente: Semanas 6–7 (Parte 2 · Evaluación 2, no el Examen 01)
+## Notas y lo que queda por fuera
 
-- `notebooks/lecture6/challenge/` (3 notebooks, dataset `wine.csv`) — requiere `scikit-learn`.
-- `notebooks/lecture6/classification/` (6 notebooks) — **no tienen `TODO`**: son un pipeline
-  de referencia ya completo, solo hay que leerlos/ejecutarlos.
-- `notebooks/lecture7/` (CIFAR-10 grayscale, Olivetti Faces) — requiere `keras`/`tensorflow`
-  y entrenamiento de redes (varios minutos por notebook en CPU).
+- `notebooks/clase7-redes-neuronales/Challenge_Keras3_CIFAR10_Grayscale_resuelto.ipynb`:
+  todo el código y las 10 respuestas están; **no se ejecutó aquí** porque la descarga
+  de CIFAR-10 (~170 MB) estaba throttled. `Restart & Run All` local lo termina en ~2 min.
+- `notebooks/lecture6/classification/` (6 notebooks) — **no tienen `TODO`**: pipeline de
+  referencia ya completo, solo hay que leerlo/ejecutarlo.
 - `YourFirstDeepNN_FashionMNIST_Keras3.ipynb` — **sin `TODO`**, notebook guiado.
-- Proyectos P0–P11 — entregas por tema, con criterios de corrección propios (ver pacto).
+- Proyectos P0–P11 y P1 "estilo Pac-Man" — entregas por tema, con criterios de corrección
+  propios (ver pacto); no son actividades de notebook con `TODO`.
