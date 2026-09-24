@@ -1,0 +1,9 @@
+tensorflow
+keras
+ultralytics
+ddgs
+pillow
+requests
+scikit-learn
+matplotlib
+notebook
