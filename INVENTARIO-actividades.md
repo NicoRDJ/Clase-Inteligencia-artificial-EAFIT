@@ -74,6 +74,32 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 | `Challenge_Keras3_CIFAR10_Grayscale.ipynb` | Challenge | ✅ código + respuestas; no ejecutado aquí (descarga de CIFAR-10 throttled) |
 | Ejemplo/ejercicio de clase (slide "Ejemplo y ejercicio de clase") | Actividad en clase | ⬜ |
 
+## Semana 8 — CNN (transfer learning, fine-tuning, YOLO)  (`slides/clase8.md`, `notebooks/lecture8`)  · *no entra en el Examen 01*
+
+| Actividad | Tipo | Estado |
+|---|---|---|
+| `CNN_Transfer_Keras3.ipynb` | Notebook guiado (sin TODO) | — (receta base ya resuelta) |
+| `taller_transfer_learning_datos_propios_keras3.ipynb` (31 `TODO`, dataset propio) | **Taller** | ✅ `notebooks/clase8-cnn/taller_transfer_learning_resuelto.ipynb` — ejecutado de verdad de principio a fin: descarga real de imágenes (DuckDuckGo), limpieza técnica + semántica manual, split 70/15/15, EfficientNetB0 congelada → cabeza entrenada → fine-tuning. Ver detalle abajo. |
+| `Lecture_08_Yolo_Intro.ipynb` (1 ejercicio) | Notebook de clase | ✅ `notebooks/clase8-cnn/yolo/Lecture_08_Yolo_Intro_resuelto.ipynb` — ejecutado con YOLO real sobre una imagen nueva (zidane.jpg): detecta 2 personas + 1 corbata |
+| `Lecture_08_Yolo_training[.ipynb / _own_data.ipynb]`, `yolo/deployment/test.ipynb` | Notebooks demo (sin TODO, requieren API key de Roboflow y datasets externos) | — |
+
+**Detalle del taller de transfer learning (dataset: espresso / cappuccino / latte, elegido porque es el ejemplo que sugiere el enunciado y es difícil de verdad — un primer intento con pizza/hamburguesa/sushi dio 100% sin errores y no servía para el TODO 6):**
+
+- 201 imágenes descargadas → 169 tras limpieza técnica (0 inválidas) y semántica manual (32 quitadas: clipart, íconos, empaques, tazas/vasos vacíos, infografías — sobre todo en "cappuccino").
+- Split 70/15/15 → train 118, val 24, test 27.
+- Cabeza (EfficientNetB0 congelada): **val_accuracy 33% → 71%** en 10 épocas.
+- Test **antes** del fine-tuning: **70.4%** accuracy (19/27).
+- Fine-tuning (20 capas descongeladas, BatchNorm congelado, lr=1e-5, 6 épocas): test **74.1%** accuracy (20/27), **+3.7 pp**.
+- Confusión principal (antes y después): **latte confundido con cappuccino** (3 de 10 latte) — las dos llevan espuma de leche y son visualmente parecidas; el fine-tuning corrigió 1 caso de espresso→cappuccino pero no tocó esa confusión latte/cappuccino.
+- 7 errores analizados en el TODO 6 (mínimo pedido: 5).
+
+## Semana 9 — Transformers y NLP (LLMs, chatbots, RAG)  (`slides/clase9.md`, `notebooks/Lecture9`)  · *no entra en el Examen 01*
+
+| Actividad | Tipo | Estado |
+|---|---|---|
+| `01_local_chatbot_lab`, `02_local_remote_hf_chatbot_lab`, `03_nvidia_chatbot_lab`, `04_nvidia_gradio_lab` | Notebooks guiados (sin blancos de código) | — (ya están completos, solo requieren Ollama / HuggingFace / API key de NVIDIA propia para correr) |
+| `05_ejercicio_nvidia_documentos.ipynb` (4 celdas "Escribe tu código aquí") | **Ejercicio** (asistente de documentos con NVIDIA NIM + Gradio sobre el paper *Attention Is All You Need*) | ✅ `notebooks/clase9-transformers-nlp/05_ejercicio_nvidia_documentos_resuelto.ipynb` — Paso 1 (extracción del PDF) ejecutado de verdad: 15 páginas, 39,510 caracteres. Pasos 2–4 (cliente NVIDIA NIM + app Gradio) tienen el código completo pero **no se ejecutaron** porque requieren una `NVIDIA_API_KEY` personal (gratuita en build.nvidia.com) que no está disponible en este entorno. |
+
 ---
 
 ## Estado global de actividades/talleres con `TODO`
@@ -86,8 +112,10 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 | 5 — RL | 3 talleres código + taller a mano + taxi | **5 / 5** ✅ |
 | 6 — ML | 3 (challenge) | **3 / 3** ✅ (Olivetti/CIFAR ver nota) |
 | 7 — Redes neuronales | 2 challenges (+ 1 guiado sin TODO) | **2 / 2** ✅ (CIFAR: código+respuestas, sin ejecutar) |
+| 8 — CNN | taller (31 TODO) + ejercicio YOLO | **2 / 2** ✅ (ejecutados de verdad, con dataset e inferencia reales) |
+| 9 — Transformers/NLP | 1 ejercicio (4 celdas en blanco) | **1 / 1** ✅ (Paso 1 ejecutado; Pasos 2-4 completos pero sin ejecutar por falta de API key) |
 
-**Todas** las actividades/talleres con `TODO` del repo del curso están resueltas.
+**Todas** las actividades/talleres con `TODO` (o celdas en blanco) del repo del curso están resueltas.
 Las Semanas 1–5 (Parte 1 → Examen 01) además están **ejecutadas y verificadas**
 (corren de principio a fin, los `assert` pasan).
 
@@ -99,5 +127,8 @@ Las Semanas 1–5 (Parte 1 → Examen 01) además están **ejecutadas y verifica
 - `notebooks/lecture6/classification/` (6 notebooks) — **no tienen `TODO`**: pipeline de
   referencia ya completo, solo hay que leerlo/ejecutarlo.
 - `YourFirstDeepNN_FashionMNIST_Keras3.ipynb` — **sin `TODO`**, notebook guiado.
+- `notebooks/clase9-transformers-nlp/05_ejercicio_nvidia_documentos_resuelto.ipynb`: para
+  ver el chat funcionando de verdad hace falta una `NVIDIA_API_KEY` propia (gratis en
+  https://build.nvidia.com/settings/api-keys) en un archivo `.env` junto al notebook.
 - Proyectos P0–P11 y P1 "estilo Pac-Man" — entregas por tema, con criterios de corrección
   propios (ver pacto); no son actividades de notebook con `TODO`.
