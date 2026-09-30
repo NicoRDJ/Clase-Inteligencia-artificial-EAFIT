@@ -33,7 +33,7 @@ class ClaudeBrain(Brain):
     def _call(self, prompt, system, max_tokens, temperature):
         kwargs = {"system": system} if system else {}
         msg = self._client.messages.create(
-            model=self.spec.model, max_tokens=max_tokens, temperature=temperature,
+            model=self.spec.model, max_tokens=max_tokens,   # la SDK 1.x ya no acepta temperature
             messages=[{"role": "user", "content": prompt}], **kwargs,
         )
         text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
@@ -58,3 +58,39 @@ class OpenAICompatibleBrain(Brain):
         )
         u = resp.usage
         return resp.choices[0].message.content or "", u.prompt_tokens, u.completion_tokens
+
+
+class GeminiBrain(Brain):
+    """Gemini: usa el modelo configurado y, si agota cuota o está saturado, rota entre los Flash más nuevos."""
+
+    FALLBACK = ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-3.5-flash-lite"]
+
+    def __init__(self, spec: BrainSpec):
+        super().__init__(spec)
+        from google import genai
+        self._genai = genai
+        self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+        self._agotados: set[str] = set()
+
+    def _call(self, prompt, system, max_tokens, temperature):
+        from google.genai import errors, types
+        modelos = [self.spec.model] + [m for m in self.FALLBACK if m != self.spec.model]
+        ultimo = None
+        for modelo in [m for m in modelos if m not in self._agotados]:
+            try:
+                r = self._client.models.generate_content(
+                    model=modelo, contents=prompt,
+                    config=types.GenerateContentConfig(system_instruction=system or None,
+                                                       max_output_tokens=max_tokens, temperature=temperature))
+                u = r.usage_metadata
+                return r.text or "", u.prompt_token_count or 0, u.candidates_token_count or 0
+            except errors.ClientError as e:
+                ultimo = e
+                if e.code == 429:
+                    self._agotados.add(modelo)
+                    continue
+                raise
+            except errors.ServerError as e:
+                ultimo = e
+                continue
+        raise RuntimeError(f"Gemini sin cuota disponible: {ultimo}")

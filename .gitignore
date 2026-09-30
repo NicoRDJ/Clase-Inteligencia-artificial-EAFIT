@@ -5,3 +5,5 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 data/cache/
+data/jarvis.db
+data/results.jsonl
