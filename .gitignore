@@ -6,4 +6,3 @@ __pycache__/
 .DS_Store
 data/cache/
 data/jarvis.db
-data/results.jsonl
