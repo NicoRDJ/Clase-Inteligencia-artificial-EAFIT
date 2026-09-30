@@ -1,0 +1,152 @@
+{
+ "Q": {
+  "formato|hard|False|alto": {
+   "local": 4.0658312414073325,
+   "gemini": 3.0633437345348806
+  },
+  "matematicas|hard|False|alto": {
+   "local": 3.0276490781110663,
+   "gemini": 3.456386282905787
+  },
+  "matematicas|easy|False|alto": {
+   "local": 3.4015298628839807,
+   "gemini": 4.301531466550673
+  },
+  "hechos|easy|False|alto": {
+   "local": 4.493907236298928,
+   "gemini": 3.6999442813281345
+  },
+  "extraccion|hard|False|alto": {
+   "local": 3.8632436141929665,
+   "gemini": 2.7153653132463154
+  },
+  "privado|easy|True|alto": {
+   "local": 3.4861084851207353,
+   "gemini": 0.0
+  },
+  "codigo|hard|False|medio": {
+   "local": 0.6011920751548723,
+   "gemini": 1.0154007810580565
+  },
+  "formato|easy|False|alto": {
+   "local": 4.444441586016195,
+   "gemini": 3.579510230300332
+  },
+  "codigo|hard|False|alto": {
+   "local": 3.3563861837647733,
+   "gemini": 1.194896372326932
+  },
+  "matematicas|easy|False|medio": {
+   "local": 1.6214032215868313,
+   "gemini": 2.6165204574409144
+  },
+  "extraccion|hard|False|medio": {
+   "local": 2.379064860102872,
+   "gemini": 1.3578322268720173
+  },
+  "matematicas|hard|False|medio": {
+   "local": 1.2360401050615397,
+   "gemini": 1.8629130146818573
+  },
+  "hechos|hard|False|medio": {
+   "local": 2.03434539543166,
+   "gemini": 2.437874860336609
+  },
+  "extraccion|hard|False|bajo": {
+   "local": 1.601550340386508,
+   "gemini": 1.313128566368245
+  },
+  "hechos|easy|False|bajo": {
+   "local": 1.7332202589860408,
+   "gemini": 1.5823266467169974
+  },
+  "formato|hard|False|bajo": {
+   "local": 2.151179993389769,
+   "gemini": 1.3208625087197137
+  },
+  "matematicas|hard|False|bajo": {
+   "local": 0.5924348154907307,
+   "gemini": 1.540793427365633
+  },
+  "hechos|hard|False|alto": {
+   "local": 3.2198766503067136,
+   "gemini": 4.245694227381716
+  },
+  "codigo|easy|False|alto": {
+   "local": 3.1004485592999953,
+   "gemini": 2.7220575028251885
+  },
+  "extraccion|easy|False|alto": {
+   "local": 2.871839782305843,
+   "gemini": 3.3359797688890507
+  },
+  "formato|hard|False|medio": {
+   "local": 2.1323389284092937,
+   "gemini": 1.814151454523032
+  },
+  "privado|easy|True|medio": {
+   "local": 1.5902897164493253,
+   "gemini": 0.0
+  },
+  "codigo|easy|False|medio": {
+   "local": 2.0422013750015653,
+   "gemini": 1.2477843096511825
+  },
+  "hechos|easy|False|medio": {
+   "local": 1.9500921268326368,
+   "gemini": 2.5128686322547367
+  },
+  "privado|hard|True|medio": {
+   "local": 1.6707882878511424,
+   "gemini": 0.0
+  },
+  "formato|easy|False|medio": {
+   "local": 2.4746447874178283,
+   "gemini": 2.1667861443798526
+  },
+  "privado|easy|True|bajo": {
+   "local": 1.831317682421763,
+   "gemini": 0.0
+  },
+  "matematicas|easy|False|bajo": {
+   "local": 1.1545102512756473,
+   "gemini": 1.0293242638985851
+  },
+  "hechos|hard|False|bajo": {
+   "local": 1.6666492290486201,
+   "gemini": 1.8497908943685972
+  },
+  "privado|hard|True|bajo": {
+   "local": 1.3443476743356593,
+   "gemini": 0.0
+  },
+  "codigo|hard|False|bajo": {
+   "local": 0.443171221812628,
+   "gemini": -0.09627003701958906
+  },
+  "extraccion|easy|False|medio": {
+   "local": 1.4863071389529097,
+   "gemini": 2.055322805621989
+  },
+  "privado|hard|True|alto": {
+   "local": 3.849006627928621,
+   "gemini": 0.0
+  },
+  "codigo|easy|False|bajo": {
+   "local": 1.358251063036034,
+   "gemini": 0.7713885214883706
+  },
+  "formato|easy|False|bajo": {
+   "local": 1.7309820651119392,
+   "gemini": 2.2603092547049934
+  },
+  "extraccion|easy|False|bajo": {
+   "local": 1.9949194705600273,
+   "gemini": 1.0571166325516324
+  }
+ },
+ "actions": [
+  "local",
+  "gemini"
+ ]
+}
