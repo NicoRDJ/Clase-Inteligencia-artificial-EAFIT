@@ -272,11 +272,12 @@ function pickVoice() {
 }
 speechSynthesis.onvoiceschanged = pickVoice; pickVoice();
 
-function speak(text, lang) {
-  if (!voiceOn || !text) { setState("idle"); return; }
+/* La voz real de JARVIS sale del servidor (/tts: Kokoro + filtro JARVIS). El reactor late
+   con la amplitud real del audio. Si el servidor no puede hablar, se usa la voz del navegador. */
+let actx = null, analyser = null, audioEl = null, speakSeq = 0;
+function speakBrowser(text, lang) {
   speechSynthesis.cancel();
-  const clean = text.replace(/[*_#`>]/g, "").replace(/\s+/g, " ");
-  const u = new SpeechSynthesisUtterance(clean);
+  const u = new SpeechSynthesisUtterance(text);
   const v = lang === "en" ? (speechSynthesis.getVoices().find(v => v.name.startsWith("Daniel") && v.lang === "en-GB")
                             || speechSynthesis.getVoices().find(v => v.lang === "en-GB")) : voz;
   if (v) u.voice = v;
@@ -285,6 +286,37 @@ function speak(text, lang) {
   u.onboundary = () => { target = .95; };
   u.onend = u.onerror = () => { if (state === "speaking") setState("idle"); };
   speechSynthesis.speak(u);
+}
+function pulse() {
+  if (!analyser || !audioEl || audioEl.paused) return;
+  const d = new Uint8Array(analyser.fftSize); analyser.getByteTimeDomainData(d);
+  let e = 0; for (const x of d) e += ((x - 128) / 128) ** 2;
+  target = Math.min(1, .35 + Math.sqrt(e / d.length) * 4.5);
+  requestAnimationFrame(pulse);
+}
+async function speak(text, lang) {
+  if (!voiceOn || !text) { setState("idle"); return; }
+  const clean = text.replace(/[*_#`>|]/g, "").replace(/\s+/g, " ").trim();
+  const my = ++speakSeq;
+  stopSpeaking();
+  try {
+    const r = await fetch(`/tts?lang=${lang || "es"}&text=${encodeURIComponent(clean)}`);
+    if (!r.ok) throw new Error(r.status);
+    const url = URL.createObjectURL(await r.blob());
+    if (my !== speakSeq) return;                     // llegó otra respuesta mientras sintetizaba
+    audioEl = new Audio(url);
+    actx = actx || new AudioContext();
+    const src = actx.createMediaElementSource(audioEl);
+    analyser = actx.createAnalyser(); analyser.fftSize = 1024;
+    src.connect(analyser); analyser.connect(actx.destination);
+    audioEl.onplay = () => { setState("speaking"); pulse(); };
+    audioEl.onended = audioEl.onerror = () => { URL.revokeObjectURL(url); if (state === "speaking") setState("idle"); };
+    await actx.resume(); await audioEl.play();
+  } catch (e) { speakBrowser(clean, lang); }
+}
+function stopSpeaking() {
+  speechSynthesis.cancel();
+  if (audioEl) { audioEl.pause(); audioEl = null; }
 }
 
 /* ───────────── voz: reconocimiento ───────────── */
@@ -303,7 +335,7 @@ if (SR) {
 
 function startListening() {
   if (!rec || listening) return;
-  speechSynthesis.cancel(); listening = true; $("mic").classList.add("live");
+  stopSpeaking(); listening = true; $("mic").classList.add("live");
   setState("listening"); $("t").value = ""; try { rec.start(); } catch {}
 }
 function stopListening() {
@@ -343,10 +375,10 @@ async function send(text) {
 $("f").onsubmit = e => { e.preventDefault(); send($("t").value); };
 $("mic").onclick = () => listening ? stopListening() : startListening();
 $("core").onclick = () => listening ? stopListening() : startListening();
-$("voice").onclick = () => { voiceOn = !voiceOn; $("voice").textContent = voiceOn ? "🔊 VOZ" : "🔇 SILENCIO"; if (!voiceOn) speechSynthesis.cancel(); };
+$("voice").onclick = () => { voiceOn = !voiceOn; $("voice").textContent = voiceOn ? "🔊 VOZ" : "🔇 SILENCIO"; if (!voiceOn) stopSpeaking(); };
 addEventListener("keydown", e => {
   if (e.code === "Space" && document.activeElement !== $("t")) { e.preventDefault(); startListening(); }
-  if (e.key === "Escape") { speechSynthesis.cancel(); stopListening(); setState("idle"); }
+  if (e.key === "Escape") { stopSpeaking(); stopListening(); setState("idle"); }
 });
 
 /* ───────────── voz manos libres (jarvis.voice.ears) ───────────── */
@@ -367,7 +399,7 @@ es.onmessage = e => {
   if (ev.kind === "council_synth") { $("synth").textContent = ev.brain.toUpperCase() + " · FUSIONANDO"; return; }
   if (ev.kind !== "voice" || ev.state === "offline") return;
   $("handsfree").textContent = "MANOS LIBRES · ACTIVO"; handsFree = true;
-  if (ev.state === "listening") { speechSynthesis.cancel(); setState("listening", "ESCUCHANDO"); }
+  if (ev.state === "listening") { stopSpeaking(); setState("listening", "ESCUCHANDO"); }
   if (ev.state === "thinking") setState("thinking");
   if (ev.state === "heard") logLine("u", ev.text, `voz · idioma: ${ev.lang}`);
   if (ev.state === "speaking") { setState("speaking"); if (ev.text !== lastReply) { lastReply = ev.text; logLine("j", ev.text); } refresh(); }
