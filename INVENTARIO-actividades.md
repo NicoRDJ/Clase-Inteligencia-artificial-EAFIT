@@ -71,7 +71,7 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 |---|---|---|
 | `YourFirstDeepNN_FashionMNIST_Keras3.ipynb` | Notebook guiado (sin TODO) | — (receta base ya resuelta) |
 | `Challenge_Keras3_OlivettiFaces.ipynb` | Challenge | ✅ `notebooks/clase7-redes-neuronales/` — ejecutado, test acc ≈ 0.96 |
-| `Challenge_Keras3_CIFAR10_Grayscale.ipynb` | Challenge | ✅ código + respuestas; no ejecutado aquí (descarga de CIFAR-10 throttled) |
+| `Challenge_Keras3_CIFAR10_Grayscale.ipynb` | Challenge | ✅ ejecutado: test acc **43.0 %**; respuestas actualizadas con datos medidos + análisis por clase (peor: cat 25 %, mejor: ship 62 %) |
 | Ejemplo/ejercicio de clase (slide "Ejemplo y ejercicio de clase") | Actividad en clase | ⬜ |
 
 ## Semana 8 — CNN (transfer learning, fine-tuning, YOLO)  (`slides/clase8.md`, `notebooks/lecture8`)  · *no entra en el Examen 01*
@@ -98,7 +98,16 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 | Actividad | Tipo | Estado |
 |---|---|---|
 | `01_local_chatbot_lab`, `02_local_remote_hf_chatbot_lab`, `03_nvidia_chatbot_lab`, `04_nvidia_gradio_lab` | Notebooks guiados (sin blancos de código) | — (ya están completos, solo requieren Ollama / HuggingFace / API key de NVIDIA propia para correr) |
+| `tokenization_Introduction.ipynb` (reto de 3 partes, subido el 25-sep) | **Reto** | ✅ `notebooks/clase9-transformers-nlp/tokenization_Introduction_resuelto.ipynb` — Word2Vec Google News ejecutado; animal: *jaguar* (vecinos, 5 analogías, PCA 3D felinos vs. carros vs. caninos) |
 | `05_ejercicio_nvidia_documentos.ipynb` (4 celdas "Escribe tu código aquí") | **Ejercicio** (asistente de documentos con NVIDIA NIM + Gradio sobre el paper *Attention Is All You Need*) | ✅ `notebooks/clase9-transformers-nlp/05_ejercicio_nvidia_documentos_resuelto.ipynb` — Paso 1 (extracción del PDF) ejecutado de verdad: 15 páginas, 39,510 caracteres. Pasos 2–4 (cliente NVIDIA NIM + app Gradio) tienen el código completo pero **no se ejecutaron** porque requieren una `NVIDIA_API_KEY` personal (gratuita en build.nvidia.com) que no está disponible en este entorno. |
+
+## Semana 10 — Prompt engineering y RAG  (`slides/clase10.md`, `notebooks/lecture10`, subida el 27-sep)
+
+| Actividad | Tipo | Estado |
+|---|---|---|
+| `00_prompt_engineering.ipynb` (9 ejercicios con variaciones pedidas) | Ejercicios | ✅ `notebooks/clase10-rag/00_prompt_engineering_resuelto.ipynb` — ejecutado con Gemini *flash-lite*; cada ejercicio con su celda de solución (idiomas/emojis, alucinación vs. temperatura, audiencias, personas, few-shot vs. zero-shot, CoT, YAML + confidence, Pydantic y pydantic-ai) |
+| `03_rag_workshop_papers.ipynb` (11 TODO + quiz + bonus + reflexión) | **Workshop** | ✅ `notebooks/clase10-rag/03_rag_workshop_papers_resuelto.ipynb` — MarkItDown → 214 chunks → Qdrant (embeddings Gemini 768d) → LCEL. Quiz 4/5 exactas + 1 superficial, bonus parcial, 0 alucinaciones (prueba extra fuera de alcance) y reflexión con umbral calibrado |
+| `01_rag`, `02_rag_langchain`, `02b_rag_app` | Notebooks demo (sin TODO) | — |
 
 ---
 
@@ -111,9 +120,10 @@ Revisión completa del repo del curso `github.com/EAFIT-IA/si3003-artificial-int
 | 4 — MDP | 1 lab + 1 actividad | **2 / 2** ✅ |
 | 5 — RL | 3 talleres código + taller a mano + taxi | **5 / 5** ✅ |
 | 6 — ML | 3 (challenge) | **3 / 3** ✅ (Olivetti/CIFAR ver nota) |
-| 7 — Redes neuronales | 2 challenges (+ 1 guiado sin TODO) | **2 / 2** ✅ (CIFAR: código+respuestas, sin ejecutar) |
+| 7 — Redes neuronales | 2 challenges (+ 1 guiado sin TODO) | **2 / 2** ✅ (ambos ejecutados) |
 | 8 — CNN | taller (31 TODO) + ejercicio YOLO | **2 / 2** ✅ (ejecutados de verdad, con dataset e inferencia reales) |
-| 9 — Transformers/NLP | 1 ejercicio (4 celdas en blanco) | **1 / 1** ✅ (Paso 1 ejecutado; Pasos 2-4 completos pero sin ejecutar por falta de API key) |
+| 9 — Transformers/NLP | 1 ejercicio + 1 reto de tokenización | **2 / 2** ✅ (NVIDIA: Paso 1 ejecutado; Pasos 2-4 pendientes de API key) |
+| 10 — Prompt eng. + RAG | 9 ejercicios + workshop RAG | **2 / 2** ✅ (ejecutados con Gemini) |
 
 **Todas** las actividades/talleres con `TODO` (o celdas en blanco) del repo del curso están resueltas.
 Las Semanas 1–5 (Parte 1 → Examen 01) además están **ejecutadas y verificadas**
@@ -121,9 +131,6 @@ Las Semanas 1–5 (Parte 1 → Examen 01) además están **ejecutadas y verifica
 
 ## Notas y lo que queda por fuera
 
-- `notebooks/clase7-redes-neuronales/Challenge_Keras3_CIFAR10_Grayscale_resuelto.ipynb`:
-  todo el código y las 10 respuestas están; **no se ejecutó aquí** porque la descarga
-  de CIFAR-10 (~170 MB) estaba throttled. `Restart & Run All` local lo termina en ~2 min.
 - `notebooks/lecture6/classification/` (6 notebooks) — **no tienen `TODO`**: pipeline de
   referencia ya completo, solo hay que leerlo/ejecutarlo.
 - `YourFirstDeepNN_FashionMNIST_Keras3.ipynb` — **sin `TODO`**, notebook guiado.
