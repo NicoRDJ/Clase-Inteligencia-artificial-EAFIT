@@ -14,3 +14,6 @@ venv/
 
 # Sistema
 .DS_Store
+
+# Llaves de API locales (nunca al repo)
+.env
