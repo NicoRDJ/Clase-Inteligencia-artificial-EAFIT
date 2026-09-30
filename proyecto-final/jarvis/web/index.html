@@ -333,7 +333,7 @@ async function send(text) {
     const j = await r.json();
     $("route").textContent = j.brain; $("why").textContent = j.reason;
     if (j.members && j.members.filter(m => m.status === "ok").length > 1) $("synth").textContent = "LISTA";
-    $("cat").textContent = j.category + (j.private ? " · privado" : "");
+    $("cat").textContent = j.category + (j.difficulty ? ` · ${j.difficulty === "hard" ? "difícil" : "fácil"}` : "") + (j.private ? " · privado" : "");
     $("lat").textContent = `${j.latency_s} s`; $("cost").textContent = `$${j.cost_usd.toFixed(4)}`;
     logLine("j", j.text, `${j.brain.toUpperCase()} · ${j.latency_s}s · $${j.cost_usd.toFixed(4)} · intentados: ${j.tried.join(" → ")}`);
     refresh(); speak(j.text, j.lang);

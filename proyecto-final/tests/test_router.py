@@ -55,3 +55,28 @@ def test_naive_bayes_y_detector():
     assert det.is_private("Mi cédula es 1034987654")
     assert det.is_private("mi contraseña es abc")
     assert not det.is_private("¿Cuál es la capital de Australia?")
+
+
+def test_percepcion_privacidad_y_falsos_positivos():
+    import json
+    from pathlib import Path
+    from jarvis.router.features import Perception
+    tasks = [json.loads(l) for l in (Path(__file__).parents[1] / "bench" / "tasks.jsonl").read_text().splitlines()]
+    ver = Perception(tasks)
+    assert ver("Mi salario es 4.000.000, ¿cuánto ahorro si guardo el 10 %?")[2]
+    assert ver("My password is Hunter2, is it strong?")[2]
+    assert ver("Mi salario es 4.000.000")[0] == "privado"
+    assert not ver("Laura trabaja en Bancolombia como analista; extrae su cargo en JSON")[2]
+    assert not ver("¿Cuál es la capital de Portugal?")[2]
+
+
+def test_q_backoff_y_guardado(tmp_path):
+    from jarvis.router.qlearning import QRouter
+    ag = QRouter(["local", "gemini"], alpha_power=0.7)
+    ag.Q[("matematicas", "hard", False, "medio")] = {"local": 0.1, "gemini": 0.9}
+    # estado nunca visitado: usa el vecino de la misma categoría y dificultad
+    assert ag.act(("matematicas", "hard", False, "alto"), greedy=True) == "gemini"
+    ag.save(tmp_path / "q.json", config={"budget": 1.0})
+    ag2, cfg = QRouter.load(tmp_path / "q.json")
+    assert cfg["budget"] == 1.0 and ag2.act(("matematicas", "hard", False, "medio"), greedy=True) == "gemini"
+    assert ag2.act(("privado", "easy", True, "alto"), greedy=True) == "local"   # escudo

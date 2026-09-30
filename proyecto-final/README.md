@@ -21,24 +21,33 @@ Notebook: [`notebooks/checkpoint1_router.ipynb`](notebooks/checkpoint1_router.ip
 | Técnica | Uso |
 |---|---|
 | Naive Bayes multinomial (desde cero) | intención de la petición y detección de datos privados |
+| Árbol de decisión de un nivel | dificultad (umbral de longitud por categoría) |
 | MDP | estado = (categoría, dificultad, privada, nivel de presupuesto); recompensa = calidad − λ·costo − μ·latencia |
-| Q-learning tabular ε-greedy | aprende a qué cerebro enviar cada tipo de petición, con escudo de privacidad |
+| Q-learning tabular ε-greedy | a qué cerebro enviar cada tipo de petición, con escudo de privacidad y paso α = n(s,a)^-0.7 |
 
-Resultados en tareas no vistas (86 tareas reales, 6 categorías, calificadas automáticamente):
+Evaluación **de punta a punta** (el router decide con lo que predice la percepción; las fugas se cuentan con la etiqueta real), hiperparámetros elegidos en validación, criterio exigido en el **peor de 10 entrenamientos**:
 
-- Calidad **101.5 %** de la mejor política permitida ("nube salvo lo privado").
-- La nube se usa en el **57 %** de las peticiones, con un costo diario del 58 % del de la línea base.
-- **0 fugas** de datos privados.
-- λ, μ y el decaimiento de ε se eligen con una partición de validación, sin tocar el test.
+| Criterio | Meta | Resultado en test |
+|---|---|---|
+| Calidad vs. "nube salvo lo privado" | ≥ 95 % | ✅ 102.0 % |
+| Peticiones enviadas a la nube | ≤ 60 % | ✅ 42 % (costo diario: 25 % del de la línea base) |
+| Fugas de datos privados | 0 | ✅ 0 |
+
+**Casos ocultos.** `bench/hidden_tasks.jsonl` tiene 42 tareas nuevas (un tercio en inglés) que no se usaron para entrenar ni para elegir nada. El router congelado (`data/q_router.json`) se evalúa sobre ellas, o sobre cualquier banco nuevo, sin reentrenar:
+
+```bash
+python -m bench.run_bench --tareas tareas.jsonl --salida data/resultados.jsonl local gemini
+python -m bench.evaluar_router tareas.jsonl data/resultados.jsonl
+```
 
 ## Estructura
 
 ```
 jarvis/        núcleo: cerebros, router, consejo, memoria, servidor FastAPI, HUD web y voz
-bench/         banco de 86 tareas y su calificador
+bench/         banco público (86 tareas), banco oculto (42), calificador y evaluador del router
 data/          resultados del banco (results.jsonl) y política aprendida (q_router.json)
 notebooks/     checkpoint 1
-tests/         pruebas (pytest)
+tests/         pruebas (pytest): calificador, banco oculto y router
 deploy/        agente launchd (24/7 en macOS) y lanzador de manos libres
 docs/          investigación: referencias del JARVIS de las películas y proyectos reales
 ```

@@ -17,8 +17,14 @@ from pathlib import Path
 
 class QRouter:
     def __init__(self, actions: list[str], *, alpha=0.2, gamma=0.9, eps=1.0, eps_min=0.05, eps_decay=0.995,
-                 shield: bool = True, local: str = "local", seed: int = 0):
+                 shield: bool = True, local: str = "local", seed: int = 0, alpha_power: float | None = None,
+                 alpha_min: float = 0.01):
+        """alpha_power: si se da, el paso es α = max(alpha_min, n(s,a)^-alpha_power), con n el número de
+        visitas al par (Robbins-Monro, 0.5 < p ≤ 1). Con recompensas ruidosas (cada estado agrupa tareas
+        distintas) un α constante hace que Q oscile; el paso decreciente la hace converger."""
         self.actions, self.alpha, self.gamma = actions, alpha, gamma
+        self.alpha_power, self.alpha_min = alpha_power, alpha_min
+        self.N = defaultdict(int)
         self.eps, self.eps_min, self.eps_decay = eps, eps_min, eps_decay
         self.shield, self.local = shield, local
         self.Q = defaultdict(lambda: {a: 0.0 for a in actions})
@@ -27,17 +33,31 @@ class QRouter:
     def legal(self, state) -> list[str]:
         return [self.local] if (self.shield and state[2]) else self.actions
 
+    def values(self, state) -> dict:
+        """Q(s, ·). Si el estado nunca se visitó (p. ej. una combinación que la percepción
+        produce solo en test), se usa el promedio de los estados visitados más parecidos:
+        misma (categoría, dificultad, privada) con otro presupuesto, luego misma categoría."""
+        if state in self.Q:
+            return self.Q[state]
+        for n in (3, 1):
+            vecinos = [q for s, q in self.Q.items() if s[:n] == state[:n]]
+            if vecinos:
+                return {a: sum(q[a] for q in vecinos) / len(vecinos) for a in self.actions}
+        return {a: 0.0 for a in self.actions}
+
     def act(self, state, greedy: bool = False) -> str:
         legales = self.legal(state)
         if not greedy and self.rng.random() < self.eps:
             return self.rng.choice(legales)
-        q = self.Q[state]
+        q = self.Q[state] if not greedy else self.values(state)
         best = max(q[a] for a in legales)
         return self.rng.choice([a for a in legales if q[a] == best])
 
     def update(self, s, a, r, s2):
         target = r if s2 is None else r + self.gamma * max(self.Q[s2][b] for b in self.legal(s2))
-        self.Q[s][a] += self.alpha * (target - self.Q[s][a])
+        self.N[(s, a)] += 1
+        alpha = self.alpha if self.alpha_power is None else max(self.alpha_min, self.N[(s, a)] ** -self.alpha_power)
+        self.Q[s][a] += alpha * (target - self.Q[s][a])
 
     def train(self, env, episodes: int = 3000) -> list[float]:
         curva = []
@@ -55,9 +75,19 @@ class QRouter:
     def policy(self) -> dict:
         return {"|".join(map(str, s)): max(self.legal(s), key=lambda a: q[a]) for s, q in self.Q.items()}
 
-    def save(self, path: Path):
+    def save(self, path: Path, config: dict | None = None):
+        """Guarda la Q-table (y la configuración con la que se entrenó: presupuesto, λ, μ)."""
         Path(path).write_text(json.dumps({"Q": {"|".join(map(str, s)): q for s, q in self.Q.items()},
-                                          "actions": self.actions}, indent=1))
+                                          "actions": self.actions, "config": config or {}}, indent=1))
+
+    @classmethod
+    def load(cls, path: Path) -> tuple["QRouter", dict]:
+        d = json.loads(Path(path).read_text())
+        agent = cls(d["actions"], eps=0.0, eps_min=0.0)
+        for k, q in d["Q"].items():
+            c, dif, priv, nivel = k.split("|")
+            agent.Q[(c, dif, priv == "True", nivel)] = q
+        return agent, d.get("config", {})
 
 
 # ── Políticas de referencia (baselines) ─────────────────────────────────────
@@ -89,4 +119,5 @@ def evaluate(policy, env, sequences: list[list[str]]) -> dict:
     n, pasos = len(sequences), sum(len(q) for q in sequences)
     return {"recompensa/día": tot["recompensa"] / n, "calidad media": tot["calidad"] / pasos,
             "costo/día (USD)": tot["costo"] / n, "latencia media (s)": tot["latencia"] / pasos,
-            "fugas privadas": int(tot["fugas"]), "sin presupuesto": int(tot["sin_presupuesto"])}
+            "fugas privadas": int(tot["fugas"]), "sin presupuesto": int(tot["sin_presupuesto"]),
+            "% nube": tot["nube"] / pasos}

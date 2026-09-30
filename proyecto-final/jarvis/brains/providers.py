@@ -88,6 +88,7 @@ class GeminiBrain(Brain):
                         # razonamiento mínimo: respuesta rápida y sin gastar los tokens de salida pensando
                         thinking_config=types.ThinkingConfig(thinking_level="minimal")))
                 u = r.usage_metadata
+                self.last_model = modelo      # qué Flash respondió de verdad (queda en los resultados del banco)
                 return r.text or "", u.prompt_token_count or 0, u.candidates_token_count or 0
             except errors.ClientError as e:
                 ultimo = e

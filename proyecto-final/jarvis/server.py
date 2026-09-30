@@ -106,7 +106,7 @@ def ask(q: Ask):
     r = jarvis.ask(q.text, session=q.session, fast=q.fast, lang=q.lang, emit=publish)
     return {"text": r.text, "brain": r.brain, "category": r.category, "private": r.private,
             "reason": r.reason, "cost_usd": r.cost, "latency_s": round(r.latency, 2), "tried": r.tried,
-            "members": r.members, "lang": r.lang}
+            "members": r.members, "lang": r.lang, "difficulty": r.difficulty}
 
 
 WEB = Path(__file__).parent / "web"

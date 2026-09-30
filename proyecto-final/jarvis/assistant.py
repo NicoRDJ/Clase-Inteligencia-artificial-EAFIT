@@ -50,6 +50,7 @@ class Reply:
     tried: list[str]
     members: list[dict] | None = None
     lang: str = "es"
+    difficulty: str = "easy"
 
 
 class Jarvis:
@@ -79,13 +80,13 @@ class Jarvis:
         m = re.match(r"^\s*(recuerda|recuérdalo|anota|remember)\s+(que\s+|that\s+)?(.+)", text, re.IGNORECASE)
         if m:
             self.memory.remember(m.group(3).strip())
-        d = self.router.decide(text, fast=fast)
+        d = self.router.decide(text, fast=fast, spent_today=self.memory.spent_today())
         members = d.order
         if fast and not d.private and any(b != "local" for b in members):
             members = [b for b in members if b != "local"]     # en voz, el local (lento) no entra al consejo
         idioma = "English" if lang == "en" else "español"
         prompt = self._prompt(session, text) + f"\n\n(Responde en {idioma}.)"
-        emit("route", category=d.category, private=d.private, reason=d.reason, members=members)
+        emit("route", category=d.category, difficulty=d.difficulty, private=d.private, reason=d.reason, members=members)
         res = deliberate(prompt, text, members, self._brain, system=PERSONA,
                          deadline_s=9.0 if fast else 30.0, emit=emit)
         for info in res.members:
@@ -96,4 +97,4 @@ class Jarvis:
                         private=d.private, cost=res.cost, latency=res.latency)
         return Reply(res.text, "consejo" if len([i for i in res.members if i["status"] == "ok"]) > 1 else (res.synthesizer or "-"),
                      d.category, d.private, d.reason, res.cost, res.latency, [i["brain"] for i in res.members],
-                     res.members, lang)
+                     res.members, lang, d.difficulty)
