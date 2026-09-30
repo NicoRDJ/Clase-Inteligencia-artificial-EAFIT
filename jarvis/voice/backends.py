@@ -25,7 +25,7 @@ SR_TTS = 24_000
 
 # Voz de JARVIS por idioma (Kokoro). Inglés: británica masculina, el registro del personaje.
 KOKORO_VOICES = {
-    "en": ("b", "bm_george"), "es": ("e", "em_alex"), "fr": ("f", "ff_siwis"), "it": ("i", "im_nicola"),
+    "en": ("b", "bm_george:0.6+bm_lewis:0.4"), "es": ("e", "em_alex"), "fr": ("f", "ff_siwis"), "it": ("i", "im_nicola"),
     "pt": ("p", "pm_alex"), "ja": ("j", "jm_kumo"), "zh": ("z", "zm_yunjian"), "hi": ("h", "hm_omega"),
 }
 
