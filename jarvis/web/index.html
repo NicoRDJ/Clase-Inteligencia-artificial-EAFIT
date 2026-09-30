@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>J.A.R.V.I.S.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#01060b; --panel:rgba(8,28,42,.42); --line:rgba(70,210,255,.28);
+  --cyan:#46d2ff; --cyan-hi:#aef0ff; --dim:#5f8ea3; --amber:#ffb547; --red:#ff4d5e; --ok:#3dffa8;
+  --glow:0 0 12px rgba(70,210,255,.55);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--cyan-hi);
+  font-family:Rajdhani,"Avenir Next",system-ui,sans-serif;overflow:hidden;user-select:none}
+.mono{font-family:"Share Tech Mono",ui-monospace,Menlo,monospace}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:49;
+  background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.75) 100%)}
+#grid{position:fixed;inset:0;opacity:.18;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 75%)}
+#stage{position:fixed;inset:0;display:grid;grid-template-columns:300px 1fr 300px;grid-template-rows:64px 1fr 150px;gap:14px;padding:16px}
+header{grid-column:1/4;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:0 6px}
+.brand{font-weight:700;letter-spacing:.55em;font-size:22px;text-shadow:var(--glow)}
+.brand small{letter-spacing:.2em;font-weight:500;color:var(--dim);font-size:12px;margin-left:12px}
+.clock{text-align:right;line-height:1.1}
+.clock b{font-size:26px;letter-spacing:.12em;text-shadow:var(--glow)}
+.clock span{display:block;font-size:12px;color:var(--dim);letter-spacing:.25em}
+.panel{position:relative;background:var(--panel);border:1px solid var(--line);padding:14px 16px;
+  clip-path:polygon(0 12px,12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);backdrop-filter:blur(3px)}
+.panel h3{margin:0 0 10px;font-size:12px;letter-spacing:.35em;color:var(--dim);font-weight:600}
+.panel h3::before{content:"◢ ";color:var(--cyan)}
+.col{display:flex;flex-direction:column;gap:14px;min-height:0}
+.brain{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed rgba(70,210,255,.12)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red)}
+.dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.brain b{font-size:15px;letter-spacing:.12em;text-transform:uppercase}
+.brain .m{display:block;font-size:11px;color:var(--dim)}
+.tag{font-size:10px;padding:2px 6px;border:1px solid var(--line);color:var(--dim);letter-spacing:.1em}
+.tag.priv{color:var(--amber);border-color:rgba(255,181,71,.5)}
+.kv{display:flex;justify-content:space-between;font-size:14px;padding:4px 0}
+.kv span{color:var(--dim)}
+.bar{height:4px;background:rgba(70,210,255,.12);margin-top:3px}
+.bar i{display:block;height:100%;background:var(--cyan);box-shadow:var(--glow);transition:width .6s}
+#decision .route{font-size:22px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-shadow:var(--glow)}
+#decision .why{font-size:13px;color:var(--dim);margin-top:4px}
+.facts li{font-size:13px;margin:5px 0;color:#cfefff}
+.facts{padding-left:16px;margin:0}
+#center{position:relative;display:flex;align-items:center;justify-content:center;min-height:0}
+#core{width:min(62vh,100%);aspect-ratio:1;cursor:pointer}
+#status{position:absolute;bottom:4%;left:0;right:0;text-align:center;letter-spacing:.5em;font-size:13px;color:var(--dim)}
+#status b{color:var(--cyan-hi);text-shadow:var(--glow)}
+#console{grid-column:1/4;display:grid;grid-template-columns:1fr 360px;gap:14px}
+#log{overflow-y:auto;font-size:15px;line-height:1.35;padding-right:6px}
+#log .u{color:var(--amber)} #log .u::before{content:"NICO › ";opacity:.7}
+#log .j{color:var(--cyan-hi)} #log .j::before{content:"JARVIS › ";color:var(--cyan)}
+#log .meta{font-size:11px;color:var(--dim);margin:2px 0 8px}
+#input{display:flex;flex-direction:column;gap:8px}
+#input form{display:flex;gap:8px}
+#t{flex:1;background:rgba(1,12,20,.8);border:1px solid var(--line);color:var(--cyan-hi);padding:11px 12px;
+  font:15px Rajdhani,system-ui;letter-spacing:.05em;outline:none}
+#t:focus{border-color:var(--cyan);box-shadow:var(--glow)}
+button{background:transparent;border:1px solid var(--cyan);color:var(--cyan-hi);font:600 13px Rajdhani,system-ui;
+  letter-spacing:.2em;padding:0 14px;cursor:pointer}
+button:hover{background:rgba(70,210,255,.12);box-shadow:var(--glow)}
+button.live{border-color:var(--amber);color:var(--amber);box-shadow:0 0 12px rgba(255,181,71,.5)}
+.row{display:flex;gap:8px}
+.row button{flex:1;padding:9px}
+.hint{font-size:11px;color:var(--dim);letter-spacing:.12em}
+#boot{position:fixed;inset:0;z-index:60;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;transition:opacity 1s}
+#boot pre{margin:0;font:14px "Share Tech Mono",Menlo,monospace;color:var(--cyan);min-height:190px;width:min(620px,90vw)}
+#boot button{padding:12px 26px;font-size:15px;opacity:0;transition:opacity .6s}
+#boot.hide{opacity:0;pointer-events:none}
+@media (max-width:1000px){#stage{grid-template-columns:1fr;grid-template-rows:56px auto 1fr auto;overflow:auto}
+  .col{display:none}#console{grid-column:1;grid-template-columns:1fr}header{grid-column:1}}
+</style>
+</head>
+<body>
+<div id="grid"></div>
+
+<div id="boot"><pre id="bootlog" class="mono"></pre><button id="enter">INICIAR SISTEMA</button></div>
+
+<div id="stage">
+  <header>
+    <div class="brand">J.A.R.V.I.S.<small>JUST A RATHER VERY INTELLIGENT SYSTEM · MK I</small></div>
+    <div class="clock mono"><b id="time">--:--:--</b><span id="date">—</span></div>
+  </header>
+
+  <div class="col">
+    <div class="panel"><h3>CEREBROS</h3><div id="brains"></div></div>
+    <div class="panel"><h3>SISTEMA</h3>
+      <div class="kv"><span>Gasto hoy</span><b class="mono" id="spent">$0.0000</b></div>
+      <div class="kv"><span>Política de ruteo</span><b id="policy">—</b></div>
+      <div class="kv"><span>Latencia servidor</span><b class="mono" id="ping">—</b></div>
+      <div class="kv"><span>Ubicación</span><b>Medellín, CO</b></div>
+      <div class="kv"><span>Clima</span><b class="mono" id="wx">—</b></div>
+    </div>
+  </div>
+
+  <div id="center">
+    <canvas id="core"></canvas>
+    <div id="status" class="mono">ESTADO · <b id="st">EN ESPERA</b></div>
+  </div>
+
+  <div class="col">
+    <div class="panel" id="decision"><h3>DECISIÓN DEL ROUTER</h3>
+      <div class="route mono" id="route">—</div>
+      <div class="why" id="why">Esperando la primera petición.</div>
+      <div class="kv"><span>Categoría</span><b id="cat">—</b></div>
+      <div class="kv"><span>Latencia</span><b class="mono" id="lat">—</b></div>
+      <div class="kv"><span>Costo</span><b class="mono" id="cost">—</b></div>
+    </div>
+    <div class="panel"><h3>USO POR CEREBRO</h3><div id="usage"></div></div>
+    <div class="panel"><h3>MEMORIA</h3><ul class="facts" id="facts"><li style="color:var(--dim)">Sin recuerdos aún.</li></ul></div>
+  </div>
+
+  <div id="console">
+    <div class="panel" id="log"></div>
+    <div class="panel" id="input">
+      <form id="f"><input id="t" placeholder="Escriba, señor…" autocomplete="off"><button>ENVIAR</button></form>
+      <div class="row">
+        <button id="mic" title="Barra espaciadora">🎙 HABLAR</button>
+        <button id="voice" title="Activar o silenciar la voz de JARVIS">🔊 VOZ</button>
+      </div>
+      <div class="hint">ESPACIO = hablar · CLIC EN EL NÚCLEO = hablar · ESC = callar</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ───────────── utilidades ───────────── */
+const $ = id => document.getElementById(id);
+const lerp = (a, b, t) => a + (b - a) * t;
+let state = "idle";          // idle | listening | thinking | speaking
+let level = 0, target = 0;   // intensidad animada del núcleo
+let voiceOn = true;
+
+function setState(s, label) {
+  state = s;
+  $("st").textContent = label || {idle:"EN ESPERA", listening:"ESCUCHANDO", thinking:"PROCESANDO", speaking:"HABLANDO"}[s];
+}
+
+/* ───────────── reloj, clima y estado ───────────── */
+function tick() {
+  const d = new Date();
+  $("time").textContent = d.toLocaleTimeString("es-CO", {hour12:false});
+  $("date").textContent = d.toLocaleDateString("es-CO", {weekday:"long", day:"2-digit", month:"long", year:"numeric"}).toUpperCase();
+}
+setInterval(tick, 1000); tick();
+
+async function weather() {
+  try {
+    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=6.2442&longitude=-75.5812&current=temperature_2m,relative_humidity_2m");
+    const j = await r.json();
+    $("wx").textContent = `${Math.round(j.current.temperature_2m)}°C · ${j.current.relative_humidity_2m}%`;
+  } catch { $("wx").textContent = "sin conexión"; }
+}
+weather(); setInterval(weather, 15 * 60 * 1000);
+
+async function refresh() {
+  const t0 = performance.now();
+  try {
+    const s = await (await fetch("/state")).json();
+    $("ping").textContent = `${Math.round(performance.now() - t0)} ms`;
+    $("spent").textContent = `$${s.spent_today_usd.toFixed(4)}`;
+    $("policy").textContent = s.learned_policy ? "Q-LEARNING" : "REGLAS";
+    $("brains").innerHTML = s.brains.map(b => `
+      <div class="brain"><div class="dot ${b.online ? "on" : ""}"></div>
+        <div><b>${b.name}</b><span class="m mono">${b.model}</span></div>
+        <span class="tag ${b.local ? "priv" : ""}">${b.status !== "ok" && !b.local ? b.status.toUpperCase() : b.local ? "PRIVADO" : b.paid ? "NUBE" : "GRATIS"}</span></div>`).join("");
+    const total = s.usage.reduce((a, u) => a + u.n, 0) || 1;
+    $("usage").innerHTML = s.usage.length ? s.usage.map(u => `
+      <div class="kv"><span>${u.brain.toUpperCase()}</span><b class="mono">${u.n} · ${u.avg_latency}s</b></div>
+      <div class="bar"><i style="width:${100 * u.n / total}%"></i></div>`).join("") : '<div class="kv"><span>Sin uso todavía</span></div>';
+    if (s.facts.length) $("facts").innerHTML = s.facts.map(f => `<li>${f}</li>`).join("");
+  } catch { $("ping").textContent = "OFFLINE"; }
+}
+setInterval(refresh, 5000); refresh();
+
+/* ───────────── núcleo tipo reactor ───────────── */
+const cv = $("core"), cx = cv.getContext("2d");
+function resize() { const r = cv.getBoundingClientRect(); cv.width = r.width * devicePixelRatio; cv.height = r.height * devicePixelRatio; }
+addEventListener("resize", resize); resize();
+
+let t = 0;
+function draw() {
+  t += 0.016;
+  const base = {idle: .15 + .05 * Math.sin(t * 1.6), listening: .45, thinking: .6, speaking: .5}[state];
+  target = Math.max(target * 0.92, base);
+  level = lerp(level, target, .15);
+  const W = cv.width, H = cv.height, c = W / 2, R = W * .42;
+  cx.clearRect(0, 0, W, H);
+  cx.save(); cx.translate(c, H / 2);
+  const glow = (a) => `rgba(70,210,255,${a})`;
+
+  // halo
+  const g = cx.createRadialGradient(0, 0, R * .05, 0, 0, R * (.55 + level * .35));
+  g.addColorStop(0, `rgba(174,240,255,${.55 + level * .4})`); g.addColorStop(.35, glow(.25 + level * .3)); g.addColorStop(1, "rgba(0,0,0,0)");
+  cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, R, 0, Math.PI * 2); cx.fill();
+
+  cx.lineCap = "round"; cx.shadowColor = "#46d2ff"; cx.shadowBlur = 14 * devicePixelRatio;
+
+  // anillo exterior con marcas
+  cx.strokeStyle = glow(.55); cx.lineWidth = 1.5 * devicePixelRatio;
+  cx.beginPath(); cx.arc(0, 0, R * .98, 0, Math.PI * 2); cx.stroke();
+  for (let i = 0; i < 120; i++) {
+    const a = i / 120 * Math.PI * 2 + t * .05, long = i % 10 === 0;
+    cx.strokeStyle = glow(long ? .9 : .35);
+    cx.beginPath(); cx.moveTo(Math.cos(a) * R * .93, Math.sin(a) * R * .93);
+    cx.lineTo(Math.cos(a) * R * (long ? .86 : .9), Math.sin(a) * R * (long ? .86 : .9)); cx.stroke();
+  }
+
+  // arcos giratorios (más rápidos al pensar)
+  const speed = {idle: .25, listening: .6, thinking: 2.2, speaking: .9}[state];
+  const arcs = [[.8, 6, 1.2, .9], [.72, 3, -1, .6], [.64, 5, 1.8, .75], [.56, 2, -2.4, .5]];
+  arcs.forEach(([r, w, dir, a], k) => {
+    cx.strokeStyle = glow(a); cx.lineWidth = w * devicePixelRatio;
+    for (let s = 0; s < 3; s++) {
+      const st = t * speed * dir + s * Math.PI * 2 / 3 + k;
+      cx.beginPath(); cx.arc(0, 0, R * r, st, st + Math.PI * (.35 + .1 * Math.sin(t + k))); cx.stroke();
+    }
+  });
+
+  // barras de voz (nivel)
+  const n = 64;
+  for (let i = 0; i < n; i++) {
+    const a = i / n * Math.PI * 2;
+    const amp = level * (0.35 + 0.65 * Math.abs(Math.sin(i * 1.7 + t * 6))) * (state === "idle" ? .25 : 1);
+    cx.strokeStyle = state === "listening" ? "rgba(255,181,71,.85)" : glow(.85);
+    cx.lineWidth = 2.2 * devicePixelRatio;
+    cx.beginPath(); cx.moveTo(Math.cos(a) * R * .44, Math.sin(a) * R * .44);
+    cx.lineTo(Math.cos(a) * R * (.44 + amp * .1), Math.sin(a) * R * (.44 + amp * .1)); cx.stroke();
+  }
+
+  // núcleo triangular (reactor)
+  cx.rotate(-t * .2);
+  cx.strokeStyle = "#aef0ff"; cx.lineWidth = 2.5 * devicePixelRatio;
+  cx.beginPath();
+  for (let i = 0; i < 3; i++) { const a = i * Math.PI * 2 / 3 - Math.PI / 2; cx.lineTo(Math.cos(a) * R * .3, Math.sin(a) * R * .3); }
+  cx.closePath(); cx.stroke();
+  cx.rotate(t * .4);
+  cx.beginPath(); cx.arc(0, 0, R * (.17 + level * .05), 0, Math.PI * 2);
+  cx.fillStyle = `rgba(210,250,255,${.75 + level * .25})`; cx.fill();
+  cx.restore();
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ───────────── voz: síntesis ───────────── */
+let voz = null;
+function pickVoice() {
+  // voz masculina y sobria, lo más cercano al mayordomo británico (castellano de España primero)
+  const vs = speechSynthesis.getVoices().filter(v => v.lang.startsWith("es"));
+  const pref = ["Jorge", "Reed", "Eddy", "Diego", "Juan", "Rocko"];
+  const find = p => vs.find(v => v.name.includes(p) && v.lang === "es-ES") || vs.find(v => v.name.includes(p));
+  voz = pref.map(find).find(Boolean) || vs[0] || null;
+}
+speechSynthesis.onvoiceschanged = pickVoice; pickVoice();
+
+function speak(text) {
+  if (!voiceOn || !text) { setState("idle"); return; }
+  speechSynthesis.cancel();
+  const clean = text.replace(/[*_#`>]/g, "").replace(/\s+/g, " ");
+  const u = new SpeechSynthesisUtterance(clean);
+  if (voz) u.voice = voz;
+  u.lang = voz ? voz.lang : "es-ES"; u.rate = 1.05; u.pitch = .92;
+  u.onstart = () => setState("speaking");
+  u.onboundary = () => { target = .95; };
+  u.onend = u.onerror = () => setState("idle");
+  speechSynthesis.speak(u);
+}
+
+/* ───────────── voz: reconocimiento ───────────── */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, listening = false;
+if (SR) {
+  rec = new SR(); rec.lang = "es-CO"; rec.interimResults = true; rec.maxAlternatives = 1;
+  rec.onresult = e => {
+    const r = e.results[e.results.length - 1];
+    $("t").value = r[0].transcript; target = .9;
+    if (r.isFinal) { stopListening(); send($("t").value); }
+  };
+  rec.onend = () => { if (listening) stopListening(); };
+  rec.onerror = () => stopListening();
+} else { $("mic").disabled = true; $("mic").textContent = "🎙 NO DISPONIBLE"; }
+
+function startListening() {
+  if (!rec || listening) return;
+  speechSynthesis.cancel(); listening = true; $("mic").classList.add("live");
+  setState("listening"); $("t").value = ""; try { rec.start(); } catch {}
+}
+function stopListening() {
+  listening = false; $("mic").classList.remove("live");
+  try { rec.stop(); } catch {}
+  if (state === "listening") setState("idle");
+}
+
+/* ───────────── conversación ───────────── */
+function logLine(cls, text, meta) {
+  const d = document.createElement("div"); d.className = cls; d.textContent = text; $("log").appendChild(d);
+  if (meta) { const m = document.createElement("div"); m.className = "meta mono"; m.textContent = meta; $("log").appendChild(m); }
+  $("log").scrollTop = 1e9;
+}
+
+async function send(text) {
+  text = (text || "").trim(); if (!text) return;
+  $("t").value = ""; logLine("u", text); setState("thinking");
+  try {
+    const r = await fetch("/ask", {method: "POST", headers: {"Content-Type": "application/json"},
+                                   body: JSON.stringify({text, session: "hud"})});
+    const j = await r.json();
+    $("route").textContent = j.brain; $("why").textContent = j.reason;
+    $("cat").textContent = j.category + (j.private ? " · privado" : "");
+    $("lat").textContent = `${j.latency_s} s`; $("cost").textContent = `$${j.cost_usd.toFixed(4)}`;
+    logLine("j", j.text, `${j.brain.toUpperCase()} · ${j.latency_s}s · $${j.cost_usd.toFixed(4)} · intentados: ${j.tried.join(" → ")}`);
+    refresh(); speak(j.text);
+  } catch (e) { logLine("j", "Perdí la conexión con el servidor, señor."); setState("idle"); }
+}
+
+$("f").onsubmit = e => { e.preventDefault(); send($("t").value); };
+$("mic").onclick = () => listening ? stopListening() : startListening();
+$("core").onclick = () => listening ? stopListening() : startListening();
+$("voice").onclick = () => { voiceOn = !voiceOn; $("voice").textContent = voiceOn ? "🔊 VOZ" : "🔇 SILENCIO"; if (!voiceOn) speechSynthesis.cancel(); };
+addEventListener("keydown", e => {
+  if (e.code === "Space" && document.activeElement !== $("t")) { e.preventDefault(); startListening(); }
+  if (e.key === "Escape") { speechSynthesis.cancel(); stopListening(); setState("idle"); }
+});
+
+/* ───────────── arranque ───────────── */
+const BOOT = [
+  "J.A.R.V.I.S. MK I — secuencia de arranque",
+  "[ OK ] Núcleo de enrutamiento Q-learning",
+  "[ OK ] Detector de privacidad (reglas + Naive Bayes)",
+  "[ OK ] Memoria persistente · SQLite",
+  "[ OK ] Enlace con cerebros: Claude · GPT · Grok · Gemini · Local",
+  "[ OK ] Síntesis y reconocimiento de voz",
+  "[ OK ] Interfaz holográfica",
+  "",
+  "Todos los sistemas en línea.",
+];
+(async () => {
+  for (const line of BOOT) {
+    for (const ch of line) { $("bootlog").textContent += ch; await new Promise(r => setTimeout(r, 9)); }
+    $("bootlog").textContent += "\n"; await new Promise(r => setTimeout(r, 120));
+  }
+  $("enter").style.opacity = 1;
+})();
+$("enter").onclick = () => {
+  $("boot").classList.add("hide");
+  const h = new Date().getHours();
+  const saludo = h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches";
+  const msg = `${saludo}, señor. Bienvenido a casa. Todos los sistemas están en línea.`;
+  logLine("j", msg); speak(msg);
+};
+</script>
+</body>
+</html>

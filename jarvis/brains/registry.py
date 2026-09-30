@@ -30,7 +30,7 @@ SPECS: dict[str, BrainSpec] = {
                         _f("PRICE_CLAUDE_IN", 5.0), _f("PRICE_CLAUDE_OUT", 25.0)),
     "gpt": BrainSpec("gpt", "openai", os.getenv("JARVIS_GPT_MODEL", "gpt-5"),
                      _f("PRICE_GPT_IN", 1.25), _f("PRICE_GPT_OUT", 10.0)),
-    "gemini": BrainSpec("gemini", "google", os.getenv("JARVIS_GEMINI_MODEL", "gemini-3.8-flash"),
+    "gemini": BrainSpec("gemini", "google", os.getenv("JARVIS_GEMINI_MODEL", "gemini-3.5-flash"),
                         _f("PRICE_GEMINI_IN", 0.0), _f("PRICE_GEMINI_OUT", 0.0)),   # plan gratuito
     "grok": BrainSpec("grok", "xai", os.getenv("JARVIS_GROK_MODEL", "grok-4"),
                       _f("PRICE_GROK_IN", 3.0), _f("PRICE_GROK_OUT", 15.0)),

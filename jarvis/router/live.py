@@ -41,8 +41,31 @@ class LiveRouter:
         self.intent = NaiveBayes().fit([t["prompt"] for t in tasks], [t["category"] for t in tasks])
         self.privacy = PrivacyDetector(self.intent)
         self.down_until: dict[str, float] = {}
+        self.status: dict[str, str] = {}
         q = ROOT / "data" / "q_router.json"
         self.q = json.loads(q.read_text())["Q"] if q.exists() else None
+
+    def probe(self) -> dict[str, str]:
+        """Prueba real (1 token) de cada cerebro de pago: detecta saldo agotado,
+        llaves inválidas o cuotas, y los deja fuera hasta la próxima prueba."""
+        estado = {}
+        for name in registry.available():
+            sp = registry.SPECS[name]
+            if sp.local or (sp.price_in + sp.price_out) == 0:   # local o gratis con cuota: no gastar cuota en pruebas
+                estado[name] = "ok"
+                continue
+            r = registry.load(name).ask("ok", max_tokens=5)
+            if r.ok:
+                self.down_until.pop(name, None)
+                estado[name] = "ok"
+            else:
+                self.down_until[name] = time.time() + ENFRIAMIENTO_S
+                e = (r.error or "").lower()
+                estado[name] = ("sin saldo" if "credit" in e or "balance" in e or "billing" in e
+                                else "sin permiso" if "403" in e or "permission" in e
+                                else "cuota" if "429" in e or "quota" in e else "error")
+        self.status = estado
+        return estado
 
     def healthy(self) -> list[str]:
         now = time.time()

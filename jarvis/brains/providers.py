@@ -63,13 +63,16 @@ class OpenAICompatibleBrain(Brain):
 class GeminiBrain(Brain):
     """Gemini: usa el modelo configurado y, si agota cuota o está saturado, rota entre los Flash más nuevos."""
 
-    FALLBACK = ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-3.5-flash-lite"]
+    FALLBACK = ["gemini-3.5-flash", "gemini-3.5-flash-lite"]   # medidos: ~1 s; 3.1-lite se cuelga, 3.8 saturado
 
     def __init__(self, spec: BrainSpec):
         super().__init__(spec)
         from google import genai
         self._genai = genai
-        self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+        from google.genai import types as _t
+        # sin timeout, un modelo saturado deja la petición colgada indefinidamente
+        self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"),
+                                    http_options=_t.HttpOptions(timeout=30_000))
         self._agotados: set[str] = set()
 
     def _call(self, prompt, system, max_tokens, temperature):
@@ -80,8 +83,10 @@ class GeminiBrain(Brain):
             try:
                 r = self._client.models.generate_content(
                     model=modelo, contents=prompt,
-                    config=types.GenerateContentConfig(system_instruction=system or None,
-                                                       max_output_tokens=max_tokens, temperature=temperature))
+                    config=types.GenerateContentConfig(
+                        system_instruction=system or None, max_output_tokens=max_tokens, temperature=temperature,
+                        # razonamiento mínimo: respuesta rápida y sin gastar los tokens de salida pensando
+                        thinking_config=types.ThinkingConfig(thinking_level="minimal")))
                 u = r.usage_metadata
                 return r.text or "", u.prompt_token_count or 0, u.candidates_token_count or 0
             except errors.ClientError as e:
@@ -90,7 +95,7 @@ class GeminiBrain(Brain):
                     self._agotados.add(modelo)
                     continue
                 raise
-            except errors.ServerError as e:
+            except Exception as e:   # 5xx, timeout de red: pasar al siguiente Flash
                 ultimo = e
                 continue
         raise RuntimeError(f"Gemini sin cuota disponible: {ultimo}")
