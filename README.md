@@ -19,6 +19,14 @@ Cada clase tiene su entrega (los proyectos por tema P1–P11 del pacto pedagógi
 | 9 | Transformers y NLP | [`notebooks/clase9-transformers-nlp/`](notebooks/clase9-transformers-nlp/) | Word2Vec: analogías y PCA 3D del *jaguar* · asistente de documentos con NVIDIA NIM + Gradio (extracción ejecutada; chat pendiente de API key de NVIDIA) |
 | 10 | Prompt engineering y RAG | [`notebooks/clase10-rag/`](notebooks/clase10-rag/) | RAG con LangChain + Qdrant + Gemini sobre *Attention* y *RAG*: quiz 4/5 + bonus parcial, 0 alucinaciones |
 
+## Proyecto final — J.A.R.V.I.S.
+
+[`proyecto-final/`](proyecto-final/) — asistente de voz 24/7 hecho de varios cerebros (local + Gemini, con Claude, GPT y Grok listos para conectarse) que deliberan en paralelo como un solo consejo.
+
+| Entrega | Contenido | Resultado |
+|---|---|---|
+| [Checkpoint 1](proyecto-final/notebooks/checkpoint1_router.ipynb) | Router de cerebros con Naive Bayes, MDP y Q-learning (Parte 1) | 101.5 % de la calidad de la mejor política permitida, usando la nube en el 57 % de las peticiones y con 0 fugas de datos privados |
+
 ## Evaluaciones
 
 | Evaluación | Contenido |
@@ -35,6 +43,7 @@ Seguimiento detallado de cada actividad: [`INVENTARIO-actividades.md`](INVENTARI
 ├── trabajos/            # Trabajos escritos (Markdown autocontenido por trabajo)
 ├── talleres/            # Talleres de preparación (Módulo 1)
 ├── examenes/            # Evaluaciones resueltas y su material de preparación
+├── proyecto-final/      # J.A.R.V.I.S.: código, banco de tareas, checkpoints y pruebas
 ├── notebooks/           # Un directorio por clase: claseN-tema/ con los notebooks resueltos
 └── streamlit/           # Dashboard de análisis SEO en Streamlit (proyecto adicional)
 ```
