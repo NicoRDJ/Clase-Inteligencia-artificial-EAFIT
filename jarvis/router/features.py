@@ -64,17 +64,28 @@ class PrivacyDetector:
         r"\bc[eé]dula\b", r"\bcontrase[ñn]a\b", r"\bclave\b", r"\bpassword\b", r"\bpin\b",
         r"\bsaldo\b", r"\bcuenta de (ahorros|corriente|fondeo)\b", r"\bein\b", r"\bnequi\b",
         r"\bbancolombia\b", r"\bhistoria cl[ií]nica\b", r"\bmis gastos\b", r"\bmi usuario\b",
+        r"\bmy (password|pin|ssn|social security|bank account|balance|salary|medical)\b",
+        r"\b(credit card|routing number|account number)\b",
         r"\b\d{8,11}\b",                        # números largos: cédulas, cuentas, teléfonos
         r"\b\d{2,3}-\d{5,7}-\d{2}\b",           # formato de cuenta bancaria
         r"\b\d{2}-\d{7}\b",                     # EIN
     ]
 
-    def __init__(self, nb: NaiveBayes | None = None):
-        self.nb = nb
+    def __init__(self, nb: NaiveBayes | None = None, margin: float = 4.0):
+        self.nb, self.margin = nb, margin
         self._re = [re.compile(p, re.IGNORECASE) for p in self.PATRONES]
 
     def rule_hit(self, text: str) -> bool:
         return any(r.search(text) for r in self._re)
 
+    def nb_hit(self, text: str) -> bool:
+        """Naive Bayes solo marca privado si le gana a la segunda clase por `margin` nats
+        (evita falsos positivos por frases comunes como «en una frase»)."""
+        if self.nb is None or "privado" not in self.nb.classes:
+            return False
+        sc = self.nb.log_scores(text)
+        otras = max(v for k, v in sc.items() if k != "privado")
+        return sc["privado"] - otras >= self.margin
+
     def is_private(self, text: str) -> bool:
-        return self.rule_hit(text) or (self.nb is not None and self.nb.predict(text) == "privado")
+        return self.rule_hit(text) or self.nb_hit(text)

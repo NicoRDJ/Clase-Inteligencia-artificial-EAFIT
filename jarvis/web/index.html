@@ -48,6 +48,11 @@ header{grid-column:1/4;display:flex;align-items:center;justify-content:space-bet
 .bar i{display:block;height:100%;background:var(--cyan);box-shadow:var(--glow);transition:width .6s}
 #decision .route{font-size:22px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-shadow:var(--glow)}
 #decision .why{font-size:13px;color:var(--dim);margin-top:4px}
+.member{display:grid;grid-template-columns:1fr auto;gap:6px;padding:6px 0;border-bottom:1px dashed rgba(70,210,255,.12)}
+.member b{letter-spacing:.12em;text-transform:uppercase}
+.member .p{grid-column:1/3;font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st{font-size:11px;letter-spacing:.15em}.st.think{color:var(--amber);animation:blink 1s infinite}.st.ok{color:var(--ok)}.st.bad{color:var(--red)}
+@keyframes blink{50%{opacity:.35}}
 .facts li{font-size:13px;margin:5px 0;color:#cfefff}
 .facts{padding-left:16px;margin:0}
 #center{position:relative;display:flex;align-items:center;justify-content:center;min-height:0}
@@ -108,6 +113,10 @@ button.live{border-color:var(--amber);color:var(--amber);box-shadow:0 0 12px rgb
   </div>
 
   <div class="col">
+    <div class="panel" id="council"><h3>CONSEJO · MACROCEREBRO</h3>
+      <div id="members"><div class="kv"><span>En espera de una petición</span></div></div>
+      <div class="kv"><span>Síntesis</span><b id="synth" class="mono">—</b></div>
+    </div>
     <div class="panel" id="decision"><h3>DECISIÓN DEL ROUTER</h3>
       <div class="route mono" id="route">—</div>
       <div class="why" id="why">Esperando la primera petición.</div>
@@ -127,7 +136,8 @@ button.live{border-color:var(--amber);color:var(--amber);box-shadow:0 0 12px rgb
         <button id="mic" title="Barra espaciadora">🎙 HABLAR</button>
         <button id="voice" title="Activar o silenciar la voz de JARVIS">🔊 VOZ</button>
       </div>
-      <div class="hint">ESPACIO = hablar · CLIC EN EL NÚCLEO = hablar · ESC = callar</div>
+      <div class="hint">DIGA «HEY JARVIS» · ESPACIO = hablar · ESC = callar</div>
+      <div class="hint mono" id="handsfree">MANOS LIBRES · INACTIVO</div>
     </div>
   </div>
 </div>
@@ -262,16 +272,18 @@ function pickVoice() {
 }
 speechSynthesis.onvoiceschanged = pickVoice; pickVoice();
 
-function speak(text) {
+function speak(text, lang) {
   if (!voiceOn || !text) { setState("idle"); return; }
   speechSynthesis.cancel();
   const clean = text.replace(/[*_#`>]/g, "").replace(/\s+/g, " ");
   const u = new SpeechSynthesisUtterance(clean);
-  if (voz) u.voice = voz;
-  u.lang = voz ? voz.lang : "es-ES"; u.rate = 1.05; u.pitch = .92;
+  const v = lang === "en" ? (speechSynthesis.getVoices().find(v => v.name.startsWith("Daniel") && v.lang === "en-GB")
+                            || speechSynthesis.getVoices().find(v => v.lang === "en-GB")) : voz;
+  if (v) u.voice = v;
+  u.lang = v ? v.lang : (lang === "en" ? "en-GB" : "es-ES"); u.rate = 1.05; u.pitch = .92;
   u.onstart = () => setState("speaking");
   u.onboundary = () => { target = .95; };
-  u.onend = u.onerror = () => setState("idle");
+  u.onend = u.onerror = () => { if (state === "speaking") setState("idle"); };
   speechSynthesis.speak(u);
 }
 
@@ -307,18 +319,24 @@ function logLine(cls, text, meta) {
   $("log").scrollTop = 1e9;
 }
 
+function detectLang(t) {
+  const en = (t.match(/\b(the|what|is|are|how|you|please|can|who|where|when|why|do|does|my|your|and)\b/gi) || []).length;
+  const es = (t.match(/\b(el|la|los|las|que|qué|es|cómo|como|por|para|mi|tu|y|de|un|una|cuál|dónde)\b/gi) || []).length + (/[áéíóúñ¿¡]/i.test(t) ? 2 : 0);
+  return en > es ? "en" : "es";
+}
 async function send(text) {
   text = (text || "").trim(); if (!text) return;
   $("t").value = ""; logLine("u", text); setState("thinking");
   try {
     const r = await fetch("/ask", {method: "POST", headers: {"Content-Type": "application/json"},
-                                   body: JSON.stringify({text, session: "hud"})});
+                                   body: JSON.stringify({text, session: "hud", fast: false, lang: detectLang(text)})});
     const j = await r.json();
     $("route").textContent = j.brain; $("why").textContent = j.reason;
+    if (j.members && j.members.filter(m => m.status === "ok").length > 1) $("synth").textContent = "LISTA";
     $("cat").textContent = j.category + (j.private ? " · privado" : "");
     $("lat").textContent = `${j.latency_s} s`; $("cost").textContent = `$${j.cost_usd.toFixed(4)}`;
     logLine("j", j.text, `${j.brain.toUpperCase()} · ${j.latency_s}s · $${j.cost_usd.toFixed(4)} · intentados: ${j.tried.join(" → ")}`);
-    refresh(); speak(j.text);
+    refresh(); speak(j.text, j.lang);
   } catch (e) { logLine("j", "Perdí la conexión con el servidor, señor."); setState("idle"); }
 }
 
@@ -330,6 +348,32 @@ addEventListener("keydown", e => {
   if (e.code === "Space" && document.activeElement !== $("t")) { e.preventDefault(); startListening(); }
   if (e.key === "Escape") { speechSynthesis.cancel(); stopListening(); setState("idle"); }
 });
+
+/* ───────────── voz manos libres (jarvis.voice.ears) ───────────── */
+let lastReply = null, handsFree = false;
+function member(b, st, cls, p) {
+  let el = document.getElementById("m-" + b);
+  if (!el) { el = document.createElement("div"); el.className = "member"; el.id = "m-" + b; $("members").appendChild(el); }
+  el.innerHTML = `<b>${b}</b><span class="st ${cls}">${st}</span><span class="p mono">${p || ""}</span>`;
+}
+const es = new EventSource("/events");
+es.onmessage = e => {
+  const ev = JSON.parse(e.data);
+  if (ev.kind === "route") { $("members").innerHTML = ""; $("synth").textContent = "—";
+    ev.members.forEach(b => member(b, "PENSANDO", "think", "")); $("why").textContent = ev.reason;
+    $("cat").textContent = ev.category + (ev.private ? " · privado" : ""); setState("thinking"); return; }
+  if (ev.kind === "council_member") { member(ev.brain, ev.status === "ok" ? `${ev.latency}s` : ev.status.toUpperCase(),
+    ev.status === "ok" ? "ok" : "bad", ev.preview); return; }
+  if (ev.kind === "council_synth") { $("synth").textContent = ev.brain.toUpperCase() + " · FUSIONANDO"; return; }
+  if (ev.kind !== "voice" || ev.state === "offline") return;
+  $("handsfree").textContent = "MANOS LIBRES · ACTIVO"; handsFree = true;
+  if (ev.state === "listening") { speechSynthesis.cancel(); setState("listening", "ESCUCHANDO"); }
+  if (ev.state === "thinking") setState("thinking");
+  if (ev.state === "heard") logLine("u", ev.text, `voz · idioma: ${ev.lang}`);
+  if (ev.state === "speaking") { setState("speaking"); if (ev.text !== lastReply) { lastReply = ev.text; logLine("j", ev.text); } refresh(); }
+  if (ev.state === "idle") setState("idle");
+};
+setInterval(() => { if (state === "speaking") target = .7 + .3 * Math.random(); }, 120);
 
 /* ───────────── arranque ───────────── */
 const BOOT = [

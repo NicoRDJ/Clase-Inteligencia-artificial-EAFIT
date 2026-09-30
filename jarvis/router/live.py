@@ -74,12 +74,16 @@ class LiveRouter:
     def mark_down(self, brain: str):
         self.down_until[brain] = time.time() + ENFRIAMIENTO_S
 
-    def decide(self, text: str) -> Decision:
+    def decide(self, text: str, fast: bool = False) -> Decision:
         category = self.intent.predict(text)
         private = self.privacy.is_private(text)
         vivos = self.healthy()
         if private:
             return Decision(["local"], category, True, "datos privados → nunca salen del Mac")
+        if fast:  # conversación por voz: prima la latencia (la nube responde en ~1 s, el local en ~10 s)
+            nube = [b for b in PREFERENCIA.get(category, PREFERENCIA["default"]) if b in vivos and b != "local"]
+            if nube:
+                return Decision(nube + ["local"], category, False, "modo voz → el cerebro más rápido disponible")
         if self.q:
             dificultad = "hard" if len(text) > 160 else "easy"
             q = self.q.get(f"{category}|{dificultad}|False|alto")

@@ -13,7 +13,9 @@ from __future__ import annotations
 from fastapi import FastAPI
 from pathlib import Path
 
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
+import asyncio
+import json as _json
 from pydantic import BaseModel
 
 from jarvis.assistant import Jarvis
@@ -37,6 +39,43 @@ threading.Thread(target=_vigilante, daemon=True).start()
 class Ask(BaseModel):
     text: str
     session: str = "web"
+    fast: bool = False
+    lang: str = "es"
+
+
+class VoiceEvent(BaseModel):
+    state: str
+    text: str | None = None
+    lang: str | None = None
+
+
+_bus: list[dict] = []          # bus de eventos para el HUD (voz + consejo)
+
+
+def publish(kind: str, **data):
+    ev = {"kind": kind, "seq": (_bus[-1]["seq"] + 1) if _bus else 1, "ts": _time.time(), **data}
+    _bus.append(ev)
+    del _bus[:-200]
+
+
+@app.post("/voice/event")
+def voice_event(ev: VoiceEvent):
+    """El oído (jarvis.voice.ears) publica aquí su estado: listening, thinking, heard, speaking, idle."""
+    publish("voice", **ev.model_dump())
+    return {"ok": True}
+
+
+@app.get("/events")
+async def events():
+    """Server-Sent Events: el HUD recibe en vivo lo que hace la voz."""
+    async def gen():
+        last = _bus[-1]["seq"] if _bus else 0
+        while True:
+            for ev in [e for e in _bus if e["seq"] > last]:
+                last = ev["seq"]
+                yield f"data: {_json.dumps(ev, ensure_ascii=False)}\n\n"
+            await asyncio.sleep(0.08)
+    return StreamingResponse(gen(), media_type="text/event-stream")
 
 
 @app.get("/health")
@@ -64,9 +103,10 @@ def state():
 
 @app.post("/ask")
 def ask(q: Ask):
-    r = jarvis.ask(q.text, session=q.session)
+    r = jarvis.ask(q.text, session=q.session, fast=q.fast, lang=q.lang, emit=publish)
     return {"text": r.text, "brain": r.brain, "category": r.category, "private": r.private,
-            "reason": r.reason, "cost_usd": r.cost, "latency_s": round(r.latency, 2), "tried": r.tried}
+            "reason": r.reason, "cost_usd": r.cost, "latency_s": round(r.latency, 2), "tried": r.tried,
+            "members": r.members, "lang": r.lang}
 
 
 WEB = Path(__file__).parent / "web"
