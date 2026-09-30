@@ -16,7 +16,7 @@ Cada clase tiene su entrega (los proyectos por tema P1–P11 del pacto pedagógi
 | 6 | Machine Learning | [`notebooks/clase6-ml/challenge/`](notebooks/clase6-ml/challenge/) | Pipeline completo, campeón LogisticRegression, test acc ≈ 0.97 |
 | 7 | Redes neuronales (Keras 3) | [`notebooks/clase7-redes-neuronales/`](notebooks/clase7-redes-neuronales/) | Olivetti ≈ 0.96 · CIFAR-10 en grises 43.0 % (con análisis por clase) |
 | 8 | CNN: transfer learning y YOLO | [`notebooks/clase8-cnn/`](notebooks/clase8-cnn/) | EfficientNetB0 sobre dataset propio (espresso/cappuccino/latte): 70.4 % → 74.1 % con fine-tuning · YOLO sobre imagen nueva |
-| 9 | Transformers y NLP | [`notebooks/clase9-transformers-nlp/`](notebooks/clase9-transformers-nlp/) | Word2Vec: analogías y PCA 3D del *jaguar* · asistente de documentos con NVIDIA NIM + Gradio |
+| 9 | Transformers y NLP | [`notebooks/clase9-transformers-nlp/`](notebooks/clase9-transformers-nlp/) | Word2Vec: analogías y PCA 3D del *jaguar* · asistente de documentos con NVIDIA NIM + Gradio (extracción ejecutada; chat pendiente de API key de NVIDIA) |
 | 10 | Prompt engineering y RAG | [`notebooks/clase10-rag/`](notebooks/clase10-rag/) | RAG con LangChain + Qdrant + Gemini sobre *Attention* y *RAG*: quiz 4/5 + bonus parcial, 0 alucinaciones |
 
 ## Evaluaciones
