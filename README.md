@@ -25,7 +25,7 @@ Cada clase tiene su entrega (los proyectos por tema P1–P11 del pacto pedagógi
 
 | Entrega | Contenido | Resultado |
 |---|---|---|
-| [Checkpoint 1](proyecto-final/notebooks/checkpoint1_router.ipynb) | Router de cerebros con Naive Bayes, MDP y Q-learning (Parte 1) | 101.5 % de la calidad de la mejor política permitida, usando la nube en el 57 % de las peticiones y con 0 fugas de datos privados |
+| [Checkpoint 1](proyecto-final/notebooks/checkpoint1_router.ipynb) | Router de cerebros con Naive Bayes, árbol de decisión, MDP y Q-learning (Parte 1), evaluado de punta a punta, en 10 semillas y con un banco oculto | En el peor de 10 entrenamientos: 102 % de la calidad de la mejor política permitida, nube en el 42 % de las peticiones y 0 fugas de datos privados |
 
 ## Evaluaciones
 
