@@ -26,3 +26,7 @@ Los pasos 2-4 no se ejecutaron en este entorno porque requieren una
 [build.nvidia.com/settings/api-keys](https://build.nvidia.com/settings/api-keys)).
 Para probarlos: crear un archivo `.env` en esta carpeta con
 `NVIDIA_API_KEY="tu_key"` y correr `Restart & Run All`.
+
+## Reto de tokenización y embeddings
+
+[`tokenization_Introduction_resuelto.ipynb`](tokenization_Introduction_resuelto.ipynb): Word2Vec (Google News, 300d). Animal elegido: *jaguar*. Incluye vecinos semánticos (y la ambigüedad animal/marca), 5 analogías vectoriales con análisis de aciertos y fallos, y PCA 3D de felinos, carros y caninos.
