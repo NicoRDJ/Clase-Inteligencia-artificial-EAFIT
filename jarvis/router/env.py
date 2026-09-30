@@ -53,8 +53,12 @@ def load_results(path: Path, brains: list[str]) -> tuple[dict, dict]:
 class RouterEnv:
     def __init__(self, outcomes: dict, tasks: dict, brains: list[str], task_ids: list[str], *,
                  episode_len: int = 20, daily_budget: float = 0.05, lam: float = 0.5, mu: float = 0.2,
-                 local: str = "local", seed: int = 0):
+                 local: str = "local", seed: int = 0, observed: dict | None = None):
+        """`observed[task_id] = (categoría, dificultad, privada)` según la percepción (Naive Bayes +
+        detector). Si se da, el agente decide con lo que *ve*, pero las fugas se cuentan con la
+        etiqueta real: un dato privado que el detector deja pasar es una fuga aunque el escudo exista."""
         self.o, self.meta, self.brains, self.ids = outcomes, tasks, brains, list(task_ids)
+        self.observed = observed
         self.n, self.budget0, self.lam, self.mu, self.local = episode_len, daily_budget, lam, mu, local
         self.rng = random.Random(seed)
         costs = [v.cost for v in outcomes.values() if v.cost > 0]
@@ -68,7 +72,10 @@ class RouterEnv:
         return "agotado" if f <= 1e-9 else "bajo" if f < 0.25 else "medio" if f < 0.6 else "alto"
 
     def _state(self):
-        m = self.meta[self.queue[self.t]]
+        tid = self.queue[self.t]
+        if self.observed is not None:
+            return (*self.observed[tid], self._nivel())
+        m = self.meta[tid]
         return (m["category"], m["difficulty"], m["private"], self._nivel())
 
     def reset(self, task_sequence: list[str] | None = None):
@@ -98,6 +105,7 @@ class RouterEnv:
         self.stats["costo"] += out.cost if not sin_plata else 0.0
         self.stats["latencia"] += real.latency
         self.stats["fugas"] += fuga
+        self.stats["nube"] += (action != self.local) and not sin_plata
         self.stats["sin_presupuesto"] += sin_plata
         self.t += 1
         done = self.t >= len(self.queue)
