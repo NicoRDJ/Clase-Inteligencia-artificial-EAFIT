@@ -13,7 +13,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from pathlib import Path
 
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, Response, StreamingResponse
 import asyncio
 import json as _json
 from pydantic import BaseModel
@@ -76,6 +76,30 @@ async def events():
                 yield f"data: {_json.dumps(ev, ensure_ascii=False)}\n\n"
             await asyncio.sleep(0.08)
     return StreamingResponse(gen(), media_type="text/event-stream")
+
+
+_tts = None
+_tts_lock = threading.Lock()
+
+
+@app.get("/tts")
+def tts(text: str, lang: str = "es"):
+    """La voz de JARVIS para el HUD: la misma voz y filtro que el modo manos libres (WAV)."""
+    import io
+
+    import numpy as np
+    import soundfile as sf
+    global _tts
+    from jarvis.voice.backends import SR_TTS, make_tts, split_sentences
+    with _tts_lock:
+        if _tts is None:
+            _tts = make_tts()
+        partes = [_tts.synth(s, lang) for s in split_sentences(text[:1200])] or [np.zeros(1, np.float32)]
+    pausa = np.zeros(int(0.12 * SR_TTS), np.float32)
+    audio = np.concatenate([np.concatenate([np.asarray(p, np.float32), pausa]) for p in partes])
+    buf = io.BytesIO()
+    sf.write(buf, audio, SR_TTS, format="WAV", subtype="PCM_16")
+    return Response(buf.getvalue(), media_type="audio/wav")
 
 
 @app.get("/health")

@@ -148,7 +148,30 @@ class TTS:
         raise NotImplementedError
 
 
+def _piper(model: str, sentence: str) -> np.ndarray:
+    """Voz Piper (ONNX, cualquier SO). Modelos en data/voices/piper/<modelo>.onnx."""
+    from pathlib import Path
+
+    from piper import PiperVoice
+    from piper.config import SynthesisConfig
+    cache = _piper.__dict__.setdefault("voces", {})
+    if model not in cache:
+        cache[model] = PiperVoice.load(str(Path(__file__).resolve().parents[2] / "data" / "voices" / "piper" / f"{model}.onnx"))
+    v = cache[model]
+    a = np.concatenate([c.audio_float_array for c in v.synthesize(sentence, SynthesisConfig(length_scale=1.05))])
+    sr = v.config.sample_rate
+    return np.interp(np.linspace(0, len(a), int(len(a) * SR_TTS / sr), endpoint=False), np.arange(len(a)), a)
+
+
 class KokoroTTS(TTS):
+    """Kokoro local con voz configurable por idioma y el filtro JARVIS.
+
+    JARVIS_VOICE_EN / JARVIS_VOICE_ES aceptan:
+      - una voz de Kokoro:            bm_lewis
+      - una mezcla de voces:          bm_george:0.6+bm_lewis:0.4
+      - una voz de Piper:             piper:es_ES-davefx-medium
+    JARVIS_VOICE_FX = 0 desactiva el filtro; JARVIS_VOICE_SPEED ajusta el ritmo (0.95 por defecto).
+    """
     name = "kokoro"
 
     def __init__(self):
@@ -163,10 +186,23 @@ class KokoroTTS(TTS):
             self._pipes[code] = self._KPipeline(lang_code=code, repo_id="hexgrad/Kokoro-82M")
         return self._pipes[code]
 
+    def _voice(self, spec: str, pipe):
+        if "+" not in spec and ":" not in spec:
+            return spec
+        partes = [p.split(":") for p in spec.split("+")]
+        return sum(float(w) * pipe.load_voice(v) for v, w in partes)
+
     def synth(self, sentence, lang):
-        voice = os.getenv(f"JARVIS_VOICE_{lang.upper()}") or KOKORO_VOICES.get(lang, KOKORO_VOICES["en"])[1]
-        chunks = [r.audio for r in self._pipe(lang)(sentence, voice=voice, speed=1.02)]
-        return np.concatenate([np.asarray(c) for c in chunks]) if chunks else np.zeros(1, np.float32)
+        from jarvis.voice.fx import jarvis_fx
+        spec = os.getenv(f"JARVIS_VOICE_{lang.upper()}") or KOKORO_VOICES.get(lang, KOKORO_VOICES["en"])[1]
+        if spec.startswith("piper:"):
+            audio = _piper(spec[6:], sentence)
+        else:
+            pipe = self._pipe(lang)
+            chunks = [r.audio for r in pipe(sentence, voice=self._voice(spec, pipe),
+                                            speed=float(os.getenv("JARVIS_VOICE_SPEED", "0.95")))]
+            audio = np.concatenate([np.asarray(c) for c in chunks]) if chunks else np.zeros(1, np.float32)
+        return audio if os.getenv("JARVIS_VOICE_FX", "1") == "0" else jarvis_fx(audio, SR_TTS)
 
 
 class ElevenLabsTTS(TTS):
