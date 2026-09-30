@@ -19,6 +19,12 @@ Cada clase tiene su entrega (los proyectos por tema P1–P11 del pacto pedagógi
 | 9 | Transformers y NLP | [`notebooks/clase9-transformers-nlp/`](notebooks/clase9-transformers-nlp/) | Word2Vec: analogías y PCA 3D del *jaguar* · asistente de documentos con NVIDIA NIM + Gradio |
 | 10 | Prompt engineering y RAG | [`notebooks/clase10-rag/`](notebooks/clase10-rag/) | RAG con LangChain + Qdrant + Gemini sobre *Attention* y *RAG*: quiz 4/5 + bonus parcial, 0 alucinaciones |
 
+## Evaluaciones
+
+| Evaluación | Contenido |
+|---|---|
+| [Examen 01](examenes/examen-01/) | Parte 1: búsqueda, optimización y Q-learning (práctico: Q-learning en Pac-Man, resuelto y ejecutado) |
+
 Seguimiento detallado de cada actividad: [`INVENTARIO-actividades.md`](INVENTARIO-actividades.md).
 
 ## Estructura
@@ -28,6 +34,7 @@ Seguimiento detallado de cada actividad: [`INVENTARIO-actividades.md`](INVENTARI
 ├── actividades-clase/   # Actividades hechas en clase (a mano)
 ├── trabajos/            # Trabajos escritos (Markdown autocontenido por trabajo)
 ├── talleres/            # Talleres de preparación (Módulo 1)
+├── examenes/            # Evaluaciones resueltas y su material de preparación
 ├── notebooks/           # Un directorio por clase: claseN-tema/ con los notebooks resueltos
 └── streamlit/           # Dashboard de análisis SEO en Streamlit (proyecto adicional)
 ```
